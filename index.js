@@ -37,6 +37,10 @@ app.get('/stations', (req, res) => {
 });
 
 app.post('/stations', (req, res)=> {
+    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined || req.lon === undefined || req.body.observations === undefined){
+        res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
+    }
+
     var long = Number(req.query.lon);
     var lati = Number(req.query.lat);
     var descr = req.query.description;
