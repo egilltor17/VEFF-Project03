@@ -15,15 +15,21 @@ exports.createStation = function(ob){
 }
 
 exports.stationValidation = function(ob){
-    if(ob !== undefined && ob.description !== undefined && ob.lat !== undefined  && ob.lon !== undefined  && ob.observations !== undefined ){
+    console.log('ob = ' + String(ob));
+    console.log('ob.description = ' + String(ob.description));
+    console.log('ob.lat = ' + String(ob.lat));
+    console.log('ob.lon = ' + String(Number(ob.lon)));
+    console.log('ob.observations = ' + String(ob.observations));
+    if(ob === undefined || ob.description === undefined || ob.lat === undefined  || ob.lon === undefined  || ob.observations === undefined ){
         return 1;
     }
-    if(Number(ob.lat) <= -90 && Number(ob.lat) >= 90){
-        return 2
+    if(Number.isNaN(Number(ob.lat)) == NaN || Number(ob.lat) < -90 || Number(ob.lat) > 90){
+        return 2;
     }
-    if(Number(ob.lon) <= -180 && Number(ob.lon) >= 180){
-        return 3
+    if(Number.isNaN(Number(ob.lon)) || Number(ob.lon) < -180 || Number(ob.lon) > 180){
+        return 3;
     }
+    console.log(Number(ob.lon));
     return 0
 }
     

@@ -110,9 +110,12 @@ app.post('/api/v1/stations', (req, res)=> {
     console.log(req.body);
     // console.log(new Date().getTime());
     console.log(typeof(req.body.lat));
-    if(!logic.stationValidation(req.body)){
-        res.status(400).json({'message':'description, latitude, longitude and observations must be defined with valid parameters in request body'});
-    }else{
+    validationMsg = logic.stationValidation(req.body);
+    console.log(validationMsg);
+    if(validationMsg > 0){
+        res.status(400).json({'message':errorMessages[validationMsg]});
+    }
+    else if(validationMsg == 0){
         console.log('past test');
 
         let long = Number(req.body.lon);
