@@ -1,21 +1,4 @@
-// Project 03/weatherBackend/index.js
-//Sample data for Project 3
-
-//The following is an example of an array of two stations. 
-//The observation array includes the ids of the observations belonging to the specified station
-var stations = [
-    {id: 1,   description: "Reykjavik", lat: 64.1275, lon: 21.9028, observations: [2, 3]},
-    {id: 422, description: "Akureyri",  lat: 65.6856, lon: 18.1002, observations: [1]}
-];
-
-//The following is an example of an array of two observations.
-//Note that an observation does not know which station it belongs to!
-var observations = [
-    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
-    {id: 2, date: 1551885137409, temp: 0.6,  windSpeed: 5.0, windDir: "n",   prec: 0.0, hum: 50.0},
-    {id: 3, date: 1551885447409, temp: 11.6, windSpeed: 3.0, windDir: "ne",  prec: 0.0, hum: 76.2},
-];
-
+// Project 03/index.js
 
 const express = require("express");
 const app = express();
@@ -23,24 +6,34 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
-
-app.use(express.bodyParser());
-app.use(app.router);
-
+app.use(url.json());
 
 app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
+
+/* ============================================================================================ */
+/* Sample data                                                                                  */
+/* ============================================================================================ */
+
+//The following is an example of an array of two stations. 
+//The observation array includes the ids of the observations belonging to the specified station
+var stations = [
+    {id: 1, description: "Reykjavik", lat: 64.1275, lon: 21.9028, observations: [2]},
+    {id: 422, description: "Akureyri", lat: 65.6856, lon: 18.1002, observations: [1]}
+];
+
+//The following is an example of an array of two observations.
+//Note that an observation does not know which station it belongs to!
+var observations = [
+    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
+    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
+];
 
 /* ============================================================================================ */
 /* GET requests                                                                                 */
 /* ============================================================================================ */
 
-
-app.get('/', (req, res) => {
-    res.status(200).send('hello world');
-});
-
 app.get('/api/v1', (req, res) => {
-    res.status(200).send('welcome to our api');
+    res.status(200).send('welcome to our api.');
 });
 
 app.get('/api/v1/stations', (req, res) => {
@@ -58,41 +51,38 @@ app.get('/api/v1/stations/:sId', (req, res) => {
             return;
         }
     }
-    res.status(404).send("message: station not found");
+    res.status(404).send("message: station not found.");
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
-    var obs = [];
     for(var i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
-            observations.forEach(observation => {
-                stations[i].observations.forEach(oId =>{
-                    if(Number(observation.id) === Number(oId)) {
-                        // obs.push(observation);
-                        obs.push({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
-                    }
-                });
-            });
+        if(stations[i].id === (Number)(req.params.sId)) {
+            var obs = [];
+            for(var j = 0; j < observations.length; j++) {
+                if((Number)(observations[j].id) === (Number)(stations[i].observations)) {
+                    obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                }
+            }
             res.status(200).json(obs);
             return;
         }
     }
-    res.status(404).send("message: station not found");
+    res.status(404).send("message: station not found.");
 });
 
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(var i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            observations.forEach(observation => {
-                if(Number(observation.id) === Number(req.params.oId)) {
-                    // res.status(200).json(observation);
-                    res.status(200).json({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
+            for(var j = 0; j < observations.length; j++) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
+                    res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
                     return;
                 }
-            });
+            }
+            res.status(404).send("message: observation not found.");
         }
     }
-    res.status(404).send("message: station not found");
+    res.status(404).send("message: station not found.");
 });
 
 /* ============================================================================================ */
@@ -100,8 +90,8 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* ============================================================================================ */
 app.post('/api/v1/stations', (req, res)=> {
     console.log('initiated post request');
-    console.log(req.body)
-    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined || req.lon === undefined || req.body.observations === undefined){
+    console.log(req.body);
+    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined  || req.body.lon === undefined  || req.body.observations === undefined){
         res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
     }else{
         console.log('past test');
@@ -145,6 +135,63 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
 
 app.delete('/api/v1', (req, res) => {
     console.log("doomsday is upon us!");
+    res.status(405).send("measage: meathod not allowed.");
+});
+
+app.delete('/api/v1/stations', (req, res) => {
+    stations = {};
+    observations = {};
+    res.status(202).send("measage: It's all gone! Everything! Just gone...");
+});
+
+app.delete('/api/v1/stations/:sId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            for(var j = 0; j < observations.length; j++) {
+                stations[i].observations.forEach(oId =>{
+                    if(Number(observations[j].id) === Number(oId)) {
+                        observations.splice(j, 1);
+                    }
+                });
+            }
+            stations.splice(i, 1);
+            res.status(202).send("measage: station " + req.params.sId + " has been deleated along with all of it's observations.");
+            return;
+        }
+    }
+    res.status(404).send("measage: station not found");
+});
+
+app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            for(var j = 0; j < observations.length; j++) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
+                    observations.splice(j, 1);
+                    res.status(202).send("message: all observations for station " + req.params.sId + " has been deleated.");
+                    return;
+                }
+            }
+            res.status(404).send("message: observation not found.");
+        }
+    }
+    res.status(404).send("message: station not found.");
+});
+
+app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            for(var j = 0; j < observations.length; j++) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
+                    observations.splice(j, 1);
+                    res.status(202).send("message: observation " + req.params.oId + " has been deleated.");
+                    return;
+                }
+            }
+            res.status(404).send("message: observation not found.");
+        }
+    }
+    res.status(404).send("message: station not found.");
 });
 
 
@@ -179,7 +226,7 @@ app.delete('/api/v1', (req, res) => {
     shall be auto-generated. The request, if successful, shall return the new observation (all attributes,
     including id and date).
 4. Delete an observation
-    Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observation.
+    Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observations[j].
 5. Delete all observations for a station
     Deletes all existing observations for a specified station. The request, if successful, returns all deleted
     observations (all attributes).
