@@ -54,7 +54,7 @@ var errorMessages = [
 /* ============================================================================================ */
 
 app.get('/api/v1', (req, res) => {
-    res.status(200).send('welcome to our api.');
+    res.status(200).json({message: "welcome to our api."});
 });
 
 app.get('/api/v1/stations', (req, res) => {
@@ -72,7 +72,7 @@ app.get('/api/v1/stations/:sId', (req, res) => {
             return;
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
@@ -90,7 +90,7 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             return;
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
@@ -102,10 +102,10 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     return;
                 }
             }
-            res.status(404).send("message: observation not found.");
+            res.status(404).json({message: "observation not found."});
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 /* ============================================================================================ */
@@ -166,13 +166,13 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
 
 app.delete('/api/v1', (req, res) => {
     console.log("doomsday is upon us!");
-    res.status(405).send("measage: meathod not allowed.");
+    res.status(405).json({message: "meathod not allowed."});
 });
 
 app.delete('/api/v1/stations', (req, res) => {
     stations = {};
     observations = {};
-    res.status(202).send("measage: It's all gone! Everything! Just gone...");
+    res.status(202).json({message: "It's all gone! Everything! Just gone..."});
 });
 
 app.delete('/api/v1/stations/:sId', (req, res) => {
@@ -186,11 +186,11 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
                 });
             }
             stations.splice(i, 1);
-            res.status(202).send("measage: station " + req.params.sId + " has been deleated along with all of it's observations.");
+            res.status(202).json({message: "station " + req.params.sId + " has been deleated along with all of it's observations."});
             return;
         }
     }
-    res.status(404).send("measage: station not found");
+    res.status(404).json({message: "station not found"});
 });
 
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
@@ -202,15 +202,14 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
                 }
             }
             stations[i].observations = [];
-            res.status(202).send("message: all observations for station " + req.params.sId + " has been deleated.");
+            res.status(202).json({message: "all observations for station " + req.params.sId + " has been deleated."});
             return;
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    let foundSomething = false;
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
             for(let j = 0; j < observations.length; j++) {
@@ -220,19 +219,16 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     for(let k = 0; k < stations[i].observations.length; k++) {
                         if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
+                            res.status(202).json({message: "observation " + req.params.oId + " has been deleated."});
+                            return;
                         }
                     }
                 }
             }
-            if(foundSomething) {
-                res.status(202).send("message: observation " + req.params.oId + " has been deleated.");
-            } else {
-                res.status(404).send("message: observation not found.");
-            }
-            return;
+        res.status(404).json({message: "observation not found."});
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 
