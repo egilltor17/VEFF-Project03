@@ -28,7 +28,6 @@ exports.stationValidation = function(ob) {
         return 4;
     }
     return 0
-    
 }
     
 exports.observationValidation = function(ob){

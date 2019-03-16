@@ -58,7 +58,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.get('/api/v1/stations', (req, res) => {
-    var shortStations = [];
+    let shortStations = [];
     stations.forEach(station => {
         shortStations.push({id: station.id, description: station.description});
     });
@@ -66,7 +66,7 @@ app.get('/api/v1/stations', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
             res.status(200).json(stations[i]);
             return;
@@ -76,10 +76,10 @@ app.get('/api/v1/stations/:sId', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === (Number)(req.params.sId)) {
-            var obs = [];
-            for(var j = 0; j < observations.length; j++) {
+            let obs = [];
+            for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if((Number)(observations[j].id) === (Number)(oId)) {
                         obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
@@ -94,9 +94,9 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
                     return;
@@ -174,9 +174,9 @@ app.delete('/api/v1/stations', (req, res) => {
 });
 
 app.delete('/api/v1/stations/:sId', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if(Number(observations[j].id) === Number(oId)) {
                         observations.splice(j, 1);
@@ -192,9 +192,9 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
 });
 
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     observations.splice(j, 1);
                 }
@@ -208,14 +208,14 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
 });
 
 app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    var foundSomething = false;
-    for(var i = 0; i < stations.length; i++) {
+    let foundSomething = false;
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     foundSomething = true;
                     observations.splice(j, 1);
-                    for(var k = 0; k < stations[i].observations.length; k++) {
+                    for(let k = 0; k < stations[i].observations.length; k++) {
                         if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
                         }
