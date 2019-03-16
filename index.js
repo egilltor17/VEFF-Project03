@@ -1,6 +1,7 @@
 // Project 03/index.js
 
 const http = require("http");
+const logic = require("./logic")
 const express = require("express");
 const app = express();
 const url = require("body-parser");
@@ -96,14 +97,12 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* ============================================================================================ */
 
 app.post('/api/v1/stations', (req, res)=> {
-    var long = Number(req.query.lon);
-    var lati = Number(req.query.lat);
-    var descr = req.query.description;
-    var obs = Number(req.query.observations);
-    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
-    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
-    stations.push(newStation);
-    res.status(201).send(newStation);
+    var newStation = logic.createStation(req.query);
+    if(newStation != false){
+        stations.push(newStation);
+        res.status(201).send(newStation);
+    }
+    res.status(400).send("message: station could not be created");
 });
 
 /* ============================================================================================ */
