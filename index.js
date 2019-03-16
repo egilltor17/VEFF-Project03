@@ -1,6 +1,7 @@
 // Project 03/index.js
 
 const http = require("http");
+const logic = require("./logic")
 const express = require("express");
 const app = express();
 const url = require("body-parser");
@@ -9,8 +10,8 @@ const port = "3000";
 
 app.use(url.json());
 
-
-app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
+http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
+// app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
 /* ============================================================================================ */
 /* Sample data                                                                                  */
