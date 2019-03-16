@@ -25,6 +25,11 @@ const port = "3000";
 
 app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
+/* ============================================================================================ */
+/* GET requests                                                                                 */
+/* ============================================================================================ */
+
+
 app.get('/', (req, res) => {
     res.status(200).send('hello world');
 });
@@ -39,17 +44,6 @@ app.get('/api/v1/stations', (req, res) => {
         shortStations.push({id: station.id, description: station.description});
     });
     res.status(200).json(shortStations);
-});
-
-app.post('/api/v1/stations', (req, res)=> {
-    var long = Number(req.query.lon);
-    var lati = Number(req.query.lat);
-    var descr = req.query.description;
-    var obs = Number(req.query.observations);
-    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
-    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
-    stations.push(newStation);
-    res.status(201).send(newStation);
 });
 
 app.get('/api/v1/stations/:sId', (req, res) => {
@@ -95,6 +89,35 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     }
     res.status(404).send("message: station not found");
 });
+
+/* ============================================================================================ */
+/* POST requests                                                                                */
+/* ============================================================================================ */
+
+app.post('/api/v1/stations', (req, res)=> {
+    var long = Number(req.query.lon);
+    var lati = Number(req.query.lat);
+    var descr = req.query.description;
+    var obs = Number(req.query.observations);
+    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+    stations.push(newStation);
+    res.status(201).send(newStation);
+});
+
+/* ============================================================================================ */
+/* UPDATE requests                                                                              */
+/* ============================================================================================ */
+
+
+/* ============================================================================================ */
+/* DELETE requests                                                                              */
+/* ============================================================================================ */
+
+app.delete('/api/v1', (req, res) => {
+    console.log("doomsday is upon us!");
+});
+
 
 /*
 1. Read all stations
