@@ -4,15 +4,16 @@
 //The following is an example of an array of two stations. 
 //The observation array includes the ids of the observations belonging to the specified station
 var stations = [
-    {id: 1, description: "Reykjavik", lat: 64.1275, lon: 21.9028, observations: [2]},
-    {id: 422, description: "Akureyri", lat: 65.6856, lon: 18.1002, observations: [1]}
+    {id: 1,   description: "Reykjavik", lat: 64.1275, lon: 21.9028, observations: [2, 3]},
+    {id: 422, description: "Akureyri",  lat: 65.6856, lon: 18.1002, observations: [1]}
 ];
 
 //The following is an example of an array of two observations.
 //Note that an observation does not know which station it belongs to!
 var observations = [
     {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
-    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
+    {id: 2, date: 1551885137409, temp: 0.6,  windSpeed: 5.0, windDir: "n",   prec: 0.0, hum: 50.0},
+    {id: 3, date: 1551885447409, temp: 11.6, windSpeed: 3.0, windDir: "ne",  prec: 0.0, hum: 76.2},
 ];
 
 
@@ -22,13 +23,17 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
 app.get('/', (req, res) => {
     res.status(200).send('hello world');
 });
 
-app.get('/stations', (req, res) => {
+app.get('/api/v1', (req, res) => {
+    res.status(200).send('welcome to our api');
+});
+
+app.get('/api/v1/stations', (req, res) => {
     var shortStations = [];
     stations.forEach(station => {
         shortStations.push({id: station.id, description: station.description});
@@ -36,11 +41,10 @@ app.get('/stations', (req, res) => {
     res.status(200).json(shortStations);
 });
 
-app.post('/stations', (req, res)=> {
+app.post('/api/v1/stations', (req, res)=> {
     if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined || req.lon === undefined || req.body.observations === undefined){
         res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
     }
-
     var long = Number(req.query.lon);
     var lati = Number(req.query.lat);
     var descr = req.query.description;
@@ -50,29 +54,48 @@ app.post('/stations', (req, res)=> {
     stations.push(newStation);
     res.status(201).send(newStation);
 });
-app.get('/stations/:id', (req, res) => {
-    stations.forEach(station => {
-        if(station.id === (Number)(req.params.id)) {
-            res.status(200).json(station);
+
+app.get('/api/v1/stations/:sId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            res.status(200).json(stations[i]);
             return;
         }
-    });
+    }
     res.status(404).send("message: station not found");
 });
 
-app.get('/stations/:id/observations', (req, res) => {
-    stations.forEach(station => {
-        if(station.id === (Number)(req.params.id)) {
-            var obs = [];
+app.get('/api/v1/stations/:sId/observations', (req, res) => {
+    var obs = [];
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
             observations.forEach(observation => {
-                if((Number)(observation.id) === (Number)(station.observations)) {
-                    obs.push(observation);
-                }
+                stations[i].observations.forEach(oId =>{
+                    if(Number(observation.id) === Number(oId)) {
+                        // obs.push(observation);
+                        obs.push({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
+                    }
+                });
             });
             res.status(200).json(obs);
             return;
         }
-    });
+    }
+    res.status(404).send("message: station not found");
+});
+
+app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            observations.forEach(observation => {
+                if(Number(observation.id) === Number(req.params.oId)) {
+                    // res.status(200).json(observation);
+                    res.status(200).json({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
+                    return;
+                }
+            });
+        }
+    }
     res.status(404).send("message: station not found");
 });
 
