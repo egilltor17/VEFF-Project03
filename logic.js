@@ -53,10 +53,10 @@ exports.observationValidation = function(ob){
     return 0;
 }
 
-exports.getnewstationid = function () {
+exports.getNewStationId = function () {
     return sserial++;
 }
 
-exports.getnewobservationid = function() {
+exports.getNewObservationId = function() {
     return oserial++;
 }

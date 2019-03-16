@@ -39,14 +39,14 @@ var observations = [
 var errorMessages = [
     "All good.",
     "The request body is undefined.",
-    "Description \"description:\" is missing",
-    "Latitude \"lat:\" must be in range [-90, 90].",
-    "Longitude \"lon:\" must be in range [-180, 180].",
-    "Tempeture \"temp:\" must be a number",
-    "Wind speed \"windSpeed:\" must not be negative.",
-    "Wind direction \"windDir:\" must be lowercase cardinal direction",
-    "Precipitation \"prec:\" must not be negative.",
-    "Humidity \"hum:\" musts be in range [0, 100]"
+    "Description \"description\": is missing",
+    "Latitude \"lat\": must be in range [-90, 90].",
+    "Longitude \"lon\": must be in range [-180, 180].",
+    "Tempeture \"temp\": must be a number",
+    "Wind speed \"windSpeed\": must not be negative.",
+    "Wind direction \"windDir\": must be lowercase cardinal direction",
+    "Precipitation \"prec\": must not be negative.",
+    "Humidity \"hum\": musts be in range [0, 100]"
 ];
 
 /* ============================================================================================ */
