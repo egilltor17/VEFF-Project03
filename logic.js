@@ -53,9 +53,17 @@ exports.observationValidation = function(ob){
 }
 
 exports.getNewStationId = function () {
-    return sserial++;
+    return sSerial++;
 }
 
 exports.getNewObservationId = function() {
-    return oserial++;
+    return oSerial++;
+}
+
+exports.findStationWithID = function(stations, id) {
+    for(let i=0; i<stations.length; i++){
+        if(stations[i].id == id){
+            return stations[i];
+        }
+    }
 }
