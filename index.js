@@ -1,11 +1,10 @@
 // Project 03/index.js
 
 const http = require("http");
-const logic = require("./logic")
+const logic = require("./logic");
 const express = require("express");
 const app = express();
 const url = require("body-parser");
-const logic = require("./logic.js");
 const hostname = "127.0.0.1";
 const port = "3000";
 
@@ -113,7 +112,7 @@ app.post('/api/v1/stations', (req, res)=> {
         let lati = Number(req.body.lat);
         let descr = req.body.description;
         let obs = req.body.observations;
-        let stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+        let stationId =  logic.getNewStationId();
         newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
         console.log(newStation);
         stations.push(newStation);

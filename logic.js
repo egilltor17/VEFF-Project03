@@ -27,11 +27,11 @@ exports.stationValidation = function(ob){
     return 0
 }
     
-function getNewStationId() {
+exports.getNewStationId = function () {
     return sSerial++;
 }
 
-function getNewObservationId() {
+exports.getNewObservationId = function() {
     return oSerial++;
 }
 
