@@ -42,7 +42,7 @@ exports.getNewObservationId = function() {
 }
 
 exports.observationValidation = function(ob){
-    if(ob.temp !== undefined && ob.windSpeed !== undefined && ob.windDir !== undefined && ob.prec !== undefined && ob.hum !== undefined){
+    if(ob !== undefined && ob.temp !== undefined && ob.windSpeed !== undefined && ob.windDir !== undefined && ob.prec !== undefined && ob.hum !== undefined){
         return 1;
     }
     if(Number(ob.windSpeed) < 0) {
@@ -58,4 +58,12 @@ exports.observationValidation = function(ob){
         return 7;
     }
     return 0;
+}
+
+exports.findStationWithId = function(stations, id){
+    for(let i=0; i<stations.length; i++){
+        if(stations[i].id == id){
+            return stations[i];
+        }
+    }
 }
