@@ -36,6 +36,16 @@ app.get('/stations', (req, res) => {
     res.status(200).json(shortStations);
 });
 
+app.post('/stations', (req, res)=> {
+    var long = Number(req.query.lon);
+    var lati = Number(req.query.lat);
+    var descr = req.query.description;
+    var obs = Number(req.query.observations);
+    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+    stations.push(newStation);
+    res.status(201).send(newStation);
+});
 app.get('/stations/:id', (req, res) => {
     stations.forEach(station => {
         if(station.id === (Number)(req.params.id)) {
