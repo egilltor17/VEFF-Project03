@@ -7,9 +7,10 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
-http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
+app.use(url.json());
 
-// app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
+
+app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
 /* ============================================================================================ */
 /* Sample data                                                                                  */
@@ -94,17 +95,41 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* ============================================================================================ */
 /* POST requests                                                                                */
 /* ============================================================================================ */
-
 app.post('/api/v1/stations', (req, res)=> {
-    var long = Number(req.query.lon);
-    var lati = Number(req.query.lat);
-    var descr = req.query.description;
-    var obs = Number(req.query.observations);
-    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
-    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
-    stations.push(newStation);
-    res.status(201).send(newStation);
+    console.log('initiated post request');
+    console.log(req.body);
+    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined  || req.body.lon === undefined  || req.body.observations === undefined){
+        res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
+    }else{
+        console.log('past test');
+        var long = Number(req.query.lon);
+        var lati = Number(req.query.lat);
+        var descr = req.query.description;
+        var obs = Number(req.query.observations);
+        var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+        newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+        stations.push(newStation);
+        res.status(201).send(newStation);
+    }
 });
+
+app.post('/api/v1/stations/:id/observations', (req, res) => {
+    if(req.body === undefined || req.body.temp === undefined || req.body.windSpeed === undefined || req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
+        res.status(400).json({'message':'temperature, wind speed, wind direction, precipitation and humidity must be defined in request body'});
+    }
+
+    let temperature = Number(req.body.tmp);
+    let tmpWindSpeed = Number(req.body.windSpeed);
+    let tmpWindDirection = Number(req.body.windDir);
+    let precip = Number(req.body.prec);
+    let humidity = Number(req.body.hum);
+    let tmpId = 5//CHANGE TO ID GENERATOR WHEN READY
+    let time = 100//CHANGE TO TIME GENERATOR WHEN READY
+    let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
+    findStationWithID(req.params.id).push(newObservation);//FINDSTATIONWITHID MUST BE IMPLEMENTED IN LOGIC FOLDER
+    res.status(201).json(newObservation);
+    
+})
 
 /* ============================================================================================ */
 /* UPDATE requests                                                                              */
