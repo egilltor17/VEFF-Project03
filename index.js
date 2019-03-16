@@ -23,7 +23,17 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
+
+app.use(express.bodyParser());
+app.use(app.router);
+
+
 app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
+
+/* ============================================================================================ */
+/* GET requests                                                                                 */
+/* ============================================================================================ */
+
 
 app.get('/', (req, res) => {
     res.status(200).send('hello world');
@@ -39,20 +49,6 @@ app.get('/api/v1/stations', (req, res) => {
         shortStations.push({id: station.id, description: station.description});
     });
     res.status(200).json(shortStations);
-});
-
-app.post('/api/v1/stations', (req, res)=> {
-    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined || req.lon === undefined || req.body.observations === undefined){
-        res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
-    }
-    var long = Number(req.query.lon);
-    var lati = Number(req.query.lat);
-    var descr = req.query.description;
-    var obs = Number(req.query.observations);
-    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
-    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
-    stations.push(newStation);
-    res.status(201).send(newStation);
 });
 
 app.get('/api/v1/stations/:sId', (req, res) => {
@@ -98,6 +94,59 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     }
     res.status(404).send("message: station not found");
 });
+
+/* ============================================================================================ */
+/* POST requests                                                                                */
+/* ============================================================================================ */
+app.post('/api/v1/stations', (req, res)=> {
+    console.log('initiated post request');
+    console.log(req.body)
+    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined || req.lon === undefined || req.body.observations === undefined){
+        res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
+    }else{
+        console.log('past test');
+        var long = Number(req.query.lon);
+        var lati = Number(req.query.lat);
+        var descr = req.query.description;
+        var obs = Number(req.query.observations);
+        var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+        newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+        stations.push(newStation);
+        res.status(201).send(newStation);
+    }
+});
+
+app.post('/api/v1/stations/:id/observations', (req, res) => {
+    if(req.body === undefined || req.body.temp === undefined || req.body.windSpeed === undefined || req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
+        res.status(400).json({'message':'temperature, wind speed, wind direction, precipitation and humidity must be defined in request body'});
+    }
+
+    let temperature = Number(req.body.tmp);
+    let tmpWindSpeed = Number(req.body.windSpeed);
+    let tmpWindDirection = Number(req.body.windDir);
+    let precip = Number(req.body.prec);
+    let humidity = Number(req.body.hum);
+    let tmpId = 5//CHANGE TO ID GENERATOR WHEN READY
+    let time = 100//CHANGE TO TIME GENERATOR WHEN READY
+    let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
+    findStationWithID(req.params.id).push(newObservation);//FINDSTATIONWITHID MUST BE IMPLEMENTED IN LOGIC FOLDER
+    res.status(201).json(newObservation);
+    
+})
+
+/* ============================================================================================ */
+/* UPDATE requests                                                                              */
+/* ============================================================================================ */
+
+
+/* ============================================================================================ */
+/* DELETE requests                                                                              */
+/* ============================================================================================ */
+
+app.delete('/api/v1', (req, res) => {
+    console.log("doomsday is upon us!");
+});
+
 
 /*
 1. Read all stations
