@@ -37,6 +37,13 @@ var observations = [
     {id: 6, date: 1551884464764, temp: 25.3, windSpeed: 30.4, windDir: "nw", prec: 0.0, hum: 74.0}
 ];
 
+var errorMessages = [
+    "All good.",
+    "There are undefined values in the json body.",
+    "Latitude must be in range [-90, 90].",
+    "Longitude must be in range [-180, 180]."
+];
+
 /* ============================================================================================ */
 /* GET requests                                                                                 */
 /* ============================================================================================ */
