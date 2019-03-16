@@ -34,3 +34,24 @@ function getNewStationId() {
 function getNewObservationId() {
     return oSerial++;
 }
+exports.updater = function(station, req){
+    var changesObject = {lat: 0, lon:"0", description:""}
+    if(req.body.lat != undefined){
+        station.lat = req.body.lat;
+        req.body.lat = String(req.body.lat)
+        Object.defineProperty(changesObject, "lat",{value: req.body.lat})  
+    }
+    if(req.body.lon != undefined){
+        station.lon = req.body.lon;
+        req.body.lon = String(req.body.lon)
+        Object.defineProperty(changesObject, "lon",{value: req.body.lon})
+    }
+    if(req.bod.description != undefined){
+        station.description = req.body.description;
+        req.body.description = String(req.body.description)
+        Object.defineProperty(changesObject, "description",{value: req.body.description})
+    }
+    changesObject = JSON.stringify(changesObject)
+    //Sleppi observations þar sem að það make-ar ekki sense
+    return changesObject
+    }
