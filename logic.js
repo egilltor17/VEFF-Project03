@@ -43,7 +43,19 @@ exports.getNewObservationId = function() {
 
 exports.observationValidation = function(ob){
     if(ob.temp !== undefined && ob.windSpeed !== undefined && ob.windDir !== undefined && ob.prec !== undefined && ob.hum !== undefined){
-        return true;
+        return 1;
     }
-    return false;
+    if(Number(ob.windSpeed) < 0) {
+        return 4;
+    }
+    if(["n","nne","ne","ene","e","ese","se","sse","s","ssw","sw","wsw","w","wnw","nw","nnw"].find(ob.windDir)) {
+        return 5;
+    }
+    if(Number(ob.prec) < 0) {
+        return 6;
+    }
+    if(Number(ob.hum) < 0 && Number(ob.hum) > 100) {
+        return 7;
+    }
+    return 0;
 }
