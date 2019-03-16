@@ -24,6 +24,11 @@ const port = "3000";
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
+/* ============================================================================================ */
+/* GET requests                                                                                 */
+/* ============================================================================================ */
+
+
 app.get('/', (req, res) => {
     res.status(200).send('hello world');
 });
@@ -36,20 +41,10 @@ app.get('/stations', (req, res) => {
     res.status(200).json(shortStations);
 });
 
-app.post('/stations', (req, res)=> {
-    var long = Number(req.query.lon);
-    var lati = Number(req.query.lat);
-    var descr = req.query.description;
-    var obs = Number(req.query.observations);
-    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
-    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
-    stations.push(newStation);
-    res.status(201).send(newStation);
-});
-app.get('/stations/:id', (req, res) => {
-    stations.forEach(station => {
-        if(station.id === (Number)(req.params.id)) {
-            res.status(200).json(station);
+app.get('/api/v1/stations/:sId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            res.status(200).json(stations[i]);
             return;
         }
     });
@@ -71,6 +66,35 @@ app.get('/stations/:id/observations', (req, res) => {
     });
     res.status(404).send("message: station not found");
 });
+
+/* ============================================================================================ */
+/* POST requests                                                                                */
+/* ============================================================================================ */
+
+app.post('/api/v1/stations', (req, res)=> {
+    var long = Number(req.query.lon);
+    var lati = Number(req.query.lat);
+    var descr = req.query.description;
+    var obs = Number(req.query.observations);
+    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+    newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+    stations.push(newStation);
+    res.status(201).send(newStation);
+});
+
+/* ============================================================================================ */
+/* UPDATE requests                                                                              */
+/* ============================================================================================ */
+
+
+/* ============================================================================================ */
+/* DELETE requests                                                                              */
+/* ============================================================================================ */
+
+app.delete('/api/v1', (req, res) => {
+    console.log("doomsday is upon us!");
+});
+
 
 /*
 1. Read all stations
