@@ -14,56 +14,49 @@ exports.createStation = function(ob){
     return false
 }
 
-exports.stationValidation = function(ob){
-    console.log('ob = ' + String(ob));
-    console.log('ob.description = ' + String(ob.description));
-    console.log('ob.lat = ' + String(ob.lat));
-    console.log('ob.lon = ' + String(Number(ob.lon)));
-    console.log('ob.observations = ' + String(ob.observations));
-    if(ob === undefined || ob.description === undefined || ob.lat === undefined  || ob.lon === undefined  || ob.observations === undefined ){
+exports.stationValidation = function(ob) {
+    if(ob === undefined) {
         return 1;
     }
-    if(Number.isNaN(Number(ob.lat)) == NaN || Number(ob.lat) < -90 || Number(ob.lat) > 90){
-        return 2;
+    if(ob.description === undefined) {
+        return 2;   
     }
-    if(Number.isNaN(Number(ob.lon)) || Number(ob.lon) < -180 || Number(ob.lon) > 180){
+    if(ob.lat === undefined || Number.isNaN(Number(ob.lat)) == NaN || Number(ob.lat) < -90 || Number(ob.lat) > 90) {
         return 3;
     }
-    console.log(Number(ob.lon));
-    return 0
-}
-    
-exports.getNewStationId = function () {
-    return sSerial++;
-}
-
-exports.getNewObservationId = function() {
-    return oSerial++;
-}
-
-exports.observationValidation = function(ob){
-    if(ob !== undefined && ob.temp !== undefined && ob.windSpeed !== undefined && ob.windDir !== undefined && ob.prec !== undefined && ob.hum !== undefined){
-        return 1;
-    }
-    if(Number(ob.windSpeed) < 0) {
+    if(ob.lon === undefined || Number.isNaN(Number(ob.lon)) || Number(ob.lon) < -180 || Number(ob.lon) > 180) {
         return 4;
     }
-    if(["n","nne","ne","ene","e","ese","se","sse","s","ssw","sw","wsw","w","wnw","nw","nnw"].find(ob.windDir)) {
+    return 0
+    
+}
+    
+exports.observationValidation = function(ob){
+    if(ob === undefined) {
+        return 1;
+    }
+    if(ob.temp === undefined || Number.isNaN(Number(ob.temp)) || Number(ob.temp) < -273.15) {
         return 5;
     }
-    if(Number(ob.prec) < 0) {
+    if(ob.windSpeed === undefined || Number.isNaN(Number(ob.windSpeed)) || Number(ob.windSpeed) < 0) {
         return 6;
     }
-    if(Number(ob.hum) < 0 && Number(ob.hum) > 100) {
+    if(ob.windDir === undefined) {//|| ["n","nne","ne","ene","e","ese","se","sse","s","ssw","sw","wsw","w","wnw","nw","nnw"].find(ob.windDir)) {
         return 7;
+    }
+    if(ob.prec === undefined || Number.isNaN(Number(ob.prec)) || Number(ob.prec) < 0) {
+        return 8;
+    }
+    if(ob.hum === undefined || Number.isNaN(Number(ob.hum)) || Number(ob.hum) < 0 && Number(ob.hum) > 100) {
+        return 9;
     }
     return 0;
 }
 
-exports.findStationWithId = function(stations, id){
-    for(let i=0; i<stations.length; i++){
-        if(stations[i].id == id){
-            return stations[i];
-        }
-    }
+exports.getNewStationId = function () {
+    return sserial++;
+}
+
+exports.getNewObservationId = function() {
+    return oserial++;
 }
