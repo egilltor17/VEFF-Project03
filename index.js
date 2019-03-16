@@ -1,5 +1,16 @@
-// Project 03/weatherBackend/index.js
-//Sample data for Project 3
+// Project 03/index.js
+
+const express = require("express");
+const app = express();
+const url = require("body-parser");
+const hostname = "127.0.0.1";
+const port = "3000";
+
+app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
+
+/* ============================================================================================ */
+/* Sample data                                                                                  */
+/* ============================================================================================ */
 
 //The following is an example of an array of two stations. 
 //The observation array includes the ids of the observations belonging to the specified station
@@ -16,26 +27,16 @@ var observations = [
     {id: 3, date: 1551885447409, temp: 11.6, windSpeed: 3.0, windDir: "ne",  prec: 0.0, hum: 76.2},
 ];
 
-
-const express = require("express");
-const app = express();
-const url = require("body-parser");
-const hostname = "127.0.0.1";
-const port = "3000";
-
-app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
-
 /* ============================================================================================ */
 /* GET requests                                                                                 */
 /* ============================================================================================ */
 
-
 app.get('/', (req, res) => {
-    res.status(200).send('hello world');
+    res.status(200).send('hello world!');
 });
 
 app.get('/api/v1', (req, res) => {
-    res.status(200).send('welcome to our api');
+    res.status(200).send('welcome to our api.');
 });
 
 app.get('/api/v1/stations', (req, res) => {
@@ -53,7 +54,7 @@ app.get('/api/v1/stations/:sId', (req, res) => {
             return;
         }
     }
-    res.status(404).send("message: station not found");
+    res.status(404).send("message: station not found.");
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
@@ -72,7 +73,7 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             return;
         }
     }
-    res.status(404).send("message: station not found");
+    res.status(404).send("message: station not found.");
 });
 
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
@@ -85,9 +86,10 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     return;
                 }
             });
+            res.status(404).send("message: observation not found.");
         }
     }
-    res.status(404).send("message: station not found");
+    res.status(404).send("message: station not found.");
 });
 
 /* ============================================================================================ */
@@ -116,6 +118,47 @@ app.post('/api/v1/stations', (req, res)=> {
 
 app.delete('/api/v1', (req, res) => {
     console.log("doomsday is upon us!");
+    res.status(405).send("measage: meathod not allowed.");
+});
+
+app.delete('/api/v1/stations', (req, res) => {
+    stations = {};
+    observations = {};
+    res.status(202).send("measage: It's all gone! Everything! Just gone...");
+});
+
+app.delete('/api/v1/stations/:sId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            for(var j = 0; j < observations.length; j++) {
+                stations[i].observations.forEach(oId =>{
+                    if(Number(observations[j].id) === Number(oId)) {
+                        observations.splice(j, 1);
+                    }
+                });
+            }
+            stations.splice(i, 1);
+            res.status(202).send("measage: station " + sId + " has been deleated along with all of it's observations.");
+            return;
+        }
+    }
+    res.status(404).send("measage: station not found");
+});
+
+app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            for(var j = 0; j < observations.length; j++) {
+                if(Number(observation.id) === Number(req.params.oId)) {
+                    observations.splice(j, 1);
+                    res.status(202).send("message: observation " + oId + "has been deleated.");
+                    return;
+                }
+            }
+            res.status(404).send("message: observation not found.");
+        }
+    }
+    res.status(404).send("message: station not found.");
 });
 
 
