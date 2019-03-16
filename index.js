@@ -123,19 +123,18 @@ app.post('/api/v1/stations', (req, res)=> {
 app.post('/api/v1/stations/:id/observations', (req, res) => {
     if(logic.observationValidation(req)){
         res.status(400).json({'message':'temperature, wind speed, wind direction, precipitation and humidity must be defined in request body'});
+    }else{   
+        let temperature = Number(req.body.tmp);
+        let tmpWindSpeed = Number(req.body.windSpeed);
+        let tmpWindDirection = Number(req.body.windDir);
+        let precip = Number(req.body.prec);
+        let humidity = Number(req.body.hum);
+        let tmpId = 5//CHANGE TO ID GENERATOR WHEN READY
+        let time = 100//CHANGE TO TIME GENERATOR WHEN READY
+        let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
+        findStationWithID(req.params.id).push(newObservation);//FINDSTATIONWITHID MUST BE IMPLEMENTED IN LOGIC FOLDER
+        res.status(201).json(newObservation);
     }
-
-    let temperature = Number(req.body.tmp);
-    let tmpWindSpeed = Number(req.body.windSpeed);
-    let tmpWindDirection = Number(req.body.windDir);
-    let precip = Number(req.body.prec);
-    let humidity = Number(req.body.hum);
-    let tmpId = 5//CHANGE TO ID GENERATOR WHEN READY
-    let time = 100//CHANGE TO TIME GENERATOR WHEN READY
-    let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
-    findStationWithID(req.params.id).push(newObservation);//FINDSTATIONWITHID MUST BE IMPLEMENTED IN LOGIC FOLDER
-    res.status(201).json(newObservation);
-    
 })
 
 /* ============================================================================================ */
