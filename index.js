@@ -112,36 +112,27 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* POST requests                                                                                */
 /* ============================================================================================ */
 app.post('/api/v1/stations', (req, res)=> {
-    console.log('initiated post request');
-    console.log(req.body);
-    // console.log(new Date().getTime());
-    console.log(typeof(req.body.lat));
     let validationMsg = logic.stationValidation(req.body);
-    console.log(validationMsg);
-    if(validationMsg > 0){
+    if(validationMsg > 0) {
         res.status(400).json({'message':errorMessages[validationMsg]});
-    }
-    else if(validationMsg == 0){
-        console.log('past test');
-
+    } else {
         let long = Number(req.body.lon);
         let lati = Number(req.body.lat);
         let descr = req.body.description;
         let obs = req.body.observations;
         let stationId =  logic.getNewStationId();
+        
         newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
-        console.log(newStation);
         stations.push(newStation);
         res.status(201).json(newStation);
     }
 });
 
 app.post('/api/v1/stations/:id/observations', (req, res) => {
-    console.log(req.body);
     let validationMsg = logic.observationValidation(req.body);
-    if(validationMsg > 0){
+    if(validationMsg > 0) {
         res.status(400).json({'message':errorMessages[validationMsg]});
-    }else{   
+    } else {   
         let temperature = Number(req.body.temp);
         let tmpWindSpeed = Number(req.body.windSpeed);
         let tmpWindDirection = req.body.windDir;
@@ -149,8 +140,10 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
         let humidity = Number(req.body.hum);
         let tmpId = logic.getNewObservationId();
         let time = new Date().getTime();
+        
         let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
         let parentStation = logic.findStationWithID(stations, req.params.id);
+        
         parentStation.observations.push(newObservation);
         res.status(201).json(newObservation);
     }
