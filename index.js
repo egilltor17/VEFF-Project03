@@ -1,7 +1,7 @@
 // Project 03/index.js
 
 const http = require("http");
-const logic = require("./logic")
+const logic = require("./logic");
 const express = require("express");
 const app = express();
 const url = require("body-parser");
@@ -36,16 +36,29 @@ var observations = [
     {id: 6, date: 1551884464764, temp: 25.3, windSpeed: 30.4, windDir: "nw", prec: 0.0, hum: 74.0}
 ];
 
+var errorMessages = [
+    "All good.",
+    "The request body is undefined.",
+    "Description \"description\": is missing",
+    "Latitude \"lat\": must be in range [-90, 90].",
+    "Longitude \"lon\": must be in range [-180, 180].",
+    "Tempeture \"temp\": must be a number",
+    "Wind speed \"windSpeed\": must not be negative.",
+    "Wind direction \"windDir\": must be lowercase cardinal direction",
+    "Precipitation \"prec\": must not be negative.",
+    "Humidity \"hum\": musts be in range [0, 100]"
+];
+
 /* ============================================================================================ */
 /* GET requests                                                                                 */
 /* ============================================================================================ */
 
 app.get('/api/v1', (req, res) => {
-    res.status(200).send('welcome to our api.');
+    res.status(200).json({message: "welcome to our api."});
 });
 
 app.get('/api/v1/stations', (req, res) => {
-    var shortStations = [];
+    let shortStations = [];
     stations.forEach(station => {
         shortStations.push({id: station.id, description: station.description});
     });
@@ -53,20 +66,20 @@ app.get('/api/v1/stations', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
             res.status(200).json(stations[i]);
             return;
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === (Number)(req.params.sId)) {
-            var obs = [];
-            for(var j = 0; j < observations.length; j++) {
+            let obs = [];
+            for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if((Number)(observations[j].id) === (Number)(oId)) {
                         obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
@@ -77,61 +90,63 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             return;
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
                     return;
                 }
             }
-            res.status(404).send("message: observation not found.");
+            res.status(404).json({message: "observation not found."});
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 /* ============================================================================================ */
 /* POST requests                                                                                */
 /* ============================================================================================ */
 app.post('/api/v1/stations', (req, res)=> {
-    console.log('initiated post request');
-    console.log(req.body);
-    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined  || req.body.lon === undefined  || req.body.observations === undefined){
-        res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
-    }else{
-        console.log('past test');
-        var long = Number(req.query.lon);
-        var lati = Number(req.query.lat);
-        var descr = req.query.description;
-        var obs = Number(req.query.observations);
-        var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+    let validationMsg = logic.stationValidation(req.body);
+    if(validationMsg > 0) {
+        res.status(400).json({'message':errorMessages[validationMsg]});
+    } else {
+        let long = Number(req.body.lon);
+        let lati = Number(req.body.lat);
+        let descr = req.body.description;
+        let obs = req.body.observations;
+        let stationId =  logic.getNewStationId();
+        
         newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
         stations.push(newStation);
-        res.status(201).send(newStation);
+        res.status(201).json(newStation);
     }
 });
 
 app.post('/api/v1/stations/:id/observations', (req, res) => {
-    if(req.body === undefined || req.body.temp === undefined || req.body.windSpeed === undefined || req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
-        res.status(400).json({'message':'temperature, wind speed, wind direction, precipitation and humidity must be defined in request body'});
+    let validationMsg = logic.observationValidation(req.body);
+    if(validationMsg > 0) {
+        res.status(400).json({'message':errorMessages[validationMsg]});
+    } else {   
+        let temperature = Number(req.body.temp);
+        let tmpWindSpeed = Number(req.body.windSpeed);
+        let tmpWindDirection = req.body.windDir;
+        let precip = Number(req.body.prec);
+        let humidity = Number(req.body.hum);
+        let tmpId = logic.getNewObservationId();
+        let time = new Date().getTime();
+        
+        let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
+        let parentStation = logic.findStationWithID(stations, req.params.id);
+        
+        parentStation.observations.push(newObservation);
+        res.status(201).json(newObservation);
     }
-
-    let temperature = Number(req.body.tmp);
-    let tmpWindSpeed = Number(req.body.windSpeed);
-    let tmpWindDirection = Number(req.body.windDir);
-    let precip = Number(req.body.prec);
-    let humidity = Number(req.body.hum);
-    let tmpId = 5//CHANGE TO ID GENERATOR WHEN READY
-    let time = 100//CHANGE TO TIME GENERATOR WHEN READY
-    let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
-    findStationWithID(req.params.id).push(newObservation);//FINDSTATIONWITHID MUST BE IMPLEMENTED IN LOGIC FOLDER
-    res.status(201).json(newObservation);
-    
 })
 
 /* ============================================================================================ */
@@ -159,19 +174,19 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
 
 app.delete('/api/v1', (req, res) => {
     console.log("doomsday is upon us!");
-    res.status(405).send("measage: meathod not allowed.");
+    res.status(405).json({message: "meathod not allowed."});
 });
 
 app.delete('/api/v1/stations', (req, res) => {
     stations = {};
     observations = {};
-    res.status(202).send("measage: It's all gone! Everything! Just gone...");
+    res.status(202).json({message: "It's all gone! Everything! Just gone..."});
 });
 
 app.delete('/api/v1/stations/:sId', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if(Number(observations[j].id) === Number(oId)) {
                         observations.splice(j, 1);
@@ -179,53 +194,49 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
                 });
             }
             stations.splice(i, 1);
-            res.status(202).send("measage: station " + req.params.sId + " has been deleated along with all of it's observations.");
+            res.status(202).json({message: "station " + req.params.sId + " has been deleated along with all of it's observations."});
             return;
         }
     }
-    res.status(404).send("measage: station not found");
+    res.status(404).json({message: "station not found"});
 });
 
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     observations.splice(j, 1);
                 }
             }
             stations[i].observations = [];
-            res.status(202).send("message: all observations for station " + req.params.sId + " has been deleated.");
+            res.status(202).json({message: "all observations for station " + req.params.sId + " has been deleated."});
             return;
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    var foundSomething = false;
-    for(var i = 0; i < stations.length; i++) {
+    for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            for(var j = 0; j < observations.length; j++) {
+            for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     foundSomething = true;
                     observations.splice(j, 1);
-                    for(var k = 0; k < stations[i].observations.length; k++) {
+                    for(let k = 0; k < stations[i].observations.length; k++) {
                         if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
+                            res.status(202).json({message: "observation " + req.params.oId + " has been deleated."});
+                            return;
                         }
                     }
                 }
             }
-            if(foundSomething) {
-                res.status(202).send("message: observation " + req.params.oId + " has been deleated.");
-            } else {
-                res.status(404).send("message: observation not found.");
-            }
-            return;
+        res.status(404).json({message: "observation not found."});
         }
     }
-    res.status(404).send("message: station not found.");
+    res.status(404).json({message: "station not found."});
 });
 
 
