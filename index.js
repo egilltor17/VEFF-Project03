@@ -23,13 +23,17 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
 app.get('/', (req, res) => {
     res.status(200).send('hello world');
 });
 
-app.get('/stations', (req, res) => {
+app.get('/api/v1', (req, res) => {
+    res.status(200).send('welcome to our api');
+});
+
+app.get('/api/v1/stations', (req, res) => {
     var shortStations = [];
     stations.forEach(station => {
         shortStations.push({id: station.id, description: station.description});
@@ -37,7 +41,7 @@ app.get('/stations', (req, res) => {
     res.status(200).json(shortStations);
 });
 
-app.post('/stations', (req, res)=> {
+app.post('/api/v1/stations', (req, res)=> {
     var long = Number(req.query.lon);
     var lati = Number(req.query.lat);
     var descr = req.query.description;
@@ -47,9 +51,10 @@ app.post('/stations', (req, res)=> {
     stations.push(newStation);
     res.status(201).send(newStation);
 });
-app.get('/stations/:id', (req, res) => {
+
+app.get('/api/v1/stations/:sId', (req, res) => {
     for(var i = 0; i < stations.length; i++) {
-        if(stations[i].id === (Number)(req.params.id)) {
+        if(stations[i].id === Number(req.params.sId)) {
             res.status(200).json(stations[i]);
             return;
         }
@@ -57,19 +62,35 @@ app.get('/stations/:id', (req, res) => {
     res.status(404).send("message: station not found");
 });
 
-app.get('/stations/:id/observations', (req, res) => {
+app.get('/api/v1/stations/:sId/observations', (req, res) => {
     var obs = [];
     for(var i = 0; i < stations.length; i++) {
-        if(stations[i].id === (Number)(req.params.id)) {
+        if(stations[i].id === Number(req.params.sId)) {
             observations.forEach(observation => {
-                stations[i].observations.forEach(obsId =>{
-                    if((Number)(observation.id) === (Number)(obsId)) {
-                        obs.push(observation);
+                stations[i].observations.forEach(oId =>{
+                    if(Number(observation.id) === Number(oId)) {
+                        // obs.push(observation);
+                        obs.push({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
                     }
                 });
             });
             res.status(200).json(obs);
             return;
+        }
+    }
+    res.status(404).send("message: station not found");
+});
+
+app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
+    for(var i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            observations.forEach(observation => {
+                if(Number(observation.id) === Number(req.params.oId)) {
+                    // res.status(200).json(observation);
+                    res.status(200).json({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
+                    return;
+                }
+            });
         }
     }
     res.status(404).send("message: station not found");
