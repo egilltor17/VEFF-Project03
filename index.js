@@ -144,13 +144,14 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
     }else{   
         let temperature = Number(req.body.temp);
         let tmpWindSpeed = Number(req.body.windSpeed);
-        let tmpWindDirection = Number(req.body.windDir);
+        let tmpWindDirection = req.body.windDir;
         let precip = Number(req.body.prec);
         let humidity = Number(req.body.hum);
         let tmpId = logic.getNewObservationId();
-        let time = new Date.getTime();
+        let time = new Date().getTime();
         let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
-        logic.findStationWithID(stations, req.params.id).push(newObservation);//FINDSTATIONWITHID MUST BE IMPLEMENTED IN LOGIC FOLDER
+        let parentStation = logic.findStationWithID(stations, req.params.id);
+        parentStation.observations.push(newObservation);
         res.status(201).json(newObservation);
     }
 })
