@@ -151,7 +151,7 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
             for(var j = 0; j < observations.length; j++) {
                 if(Number(observation.id) === Number(req.params.oId)) {
                     observations.splice(j, 1);
-                    res.status(202).send("message: observation " + oId + "has been deleated.");
+                    res.status(202).send("message: observation " + oId + " has been deleated.");
                     return;
                 }
             }
