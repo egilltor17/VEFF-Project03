@@ -56,11 +56,11 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
     for(var i = 0; i < stations.length; i++) {
         if(stations[i].id === (Number)(req.params.sId)) {
             var obs = [];
-            observations.forEach(observation => {
-                if((Number)(observation.id) === (Number)(stations[i].observations)) {
-                    obs.push({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
+            for(var j = 0; j < observations.length; j++) {
+                if((Number)(observations[j].id) === (Number)(stations[i].observations)) {
+                    obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
                 }
-            });
+            }
             res.status(200).json(obs);
             return;
         }
@@ -71,12 +71,12 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(var i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
-            observations.forEach(observation => {
-                if(Number(observation.id) === Number(req.params.oId)) {
-                    res.status(200).json({date: observation.date, temp: observation.temp, windSpeed: observation.windSpeed, windDir: observation.windDir, prec: observation.prec, hum: observation.hum});
+            for(var j = 0; j < observations.length; j++) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
+                    res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
                     return;
                 }
-            });
+            }
             res.status(404).send("message: observation not found.");
         }
     }
@@ -140,7 +140,7 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
     for(var i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
             for(var j = 0; j < observations.length; j++) {
-                if(Number(observation.id) === Number(req.params.oId)) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
                     observations.splice(j, 1);
                     res.status(202).send("message: all observations for station " + req.params.sId + " has been deleated.");
                     return;
@@ -156,7 +156,7 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(var i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
             for(var j = 0; j < observations.length; j++) {
-                if(Number(observation.id) === Number(req.params.oId)) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
                     observations.splice(j, 1);
                     res.status(202).send("message: observation " + req.params.oId + " has been deleated.");
                     return;
@@ -200,7 +200,7 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     shall be auto-generated. The request, if successful, shall return the new observation (all attributes,
     including id and date).
 4. Delete an observation
-    Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observation.
+    Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observations[j].
 5. Delete all observations for a station
     Deletes all existing observations for a specified station. The request, if successful, returns all deleted
     observations (all attributes).
