@@ -1,3 +1,8 @@
+// Project 03/logic.js
+
+var sSerial = 1000;    // remember to purge dummy data before handin
+var oSerial = 1000;
+
 exports.createStation = function(ob){
     if (this.stationValidation(ob)){
     var long = Number(req.query.lon);
@@ -17,4 +22,12 @@ exports.stationValidation = function(ob){
         }
     }
     return false;
+}
+
+function getNewStationId() {
+    return sSerial++;
+}
+
+function getNewObservationId() {
+    return oSerial++;
 }
