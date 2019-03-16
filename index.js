@@ -66,9 +66,11 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
         if(stations[i].id === (Number)(req.params.sId)) {
             var obs = [];
             for(var j = 0; j < observations.length; j++) {
-                if((Number)(observations[j].id) === (Number)(stations[i].observations)) {
-                    obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
-                }
+                stations[i].observations.forEach(oId =>{
+                    if((Number)(observations[j].id) === (Number)(oId)) {
+                        obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                    }
+                });
             }
             res.status(200).json(obs);
             return;
