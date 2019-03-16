@@ -1,30 +1,38 @@
+// Project 03/logic.js
+
+var sSerial = 1000;    // remember to purge dummy data before handin
+var oSerial = 1000;
+
 exports.createStation = function(ob){
-    if (this.stationValidation(ob)){
-    var long = Number(req.query.lon);
-    var lati = Number(req.query.lat);
-    var descr = req.query.description;
-    var obs = Number(req.query.observations);
-    var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+    if (this.stationValidation(ob) == true){
+        var obs = [0]
+        var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+        Object.defineProperty(ob,"id",{value:stationId});
+        Object.defineProperty(ob,"observations",{value:obs}); 
         return ob
     }
     return false
 }
 
 exports.stationValidation = function(ob){
-    console.log('ob = ' + String(ob));
-    console.log('ob.description = ' + String(ob.description));
-    console.log('ob.lat = ' + String(ob.lat));
-    console.log('ob.lon = ' + String(ob.lon));
-    console.log('ob.observations' + String(ob.observations));
     if(ob !== undefined && ob.description !== undefined && ob.lat !== undefined  && ob.lon !== undefined  && ob.observations !== undefined ){
-        console.log('passed first barrier');
-        if(-90 >= ob.lat >= 90){//enþá að fikkta
-            if((typeof(ob.lon) == Number) && (-180 >= ob.lon >= 180)){
-                return true;
-            }
-        }
+        return 1;
     }
-        return false;
+    if(Number(ob.lat) <= -90 && Number(ob.lat) >= 90){
+        return 2
+    }
+    if(Number(ob.lon) <= -180 && Number(ob.lon) >= 180){
+        return 3
+    }
+    return 0
+}
+    
+function getNewStationId() {
+    return sSerial++;
+}
+
+function getNewObservationId() {
+    return oSerial++;
 }
 
 exports.observationValidation = function(ob){
