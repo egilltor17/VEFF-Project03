@@ -11,10 +11,25 @@ exports.createStation = function(ob){
 }
 
 exports.stationValidation = function(ob){
-    if(typeof(ob.lat) == Number && (-90 >= ob.lat >= 90)){
-        if((typeof(ob.lon) == Number) && (-180 >= ob.lon >= 180)){
-            return true;
+    console.log('ob = ' + String(ob));
+    console.log('ob.description = ' + String(ob.description));
+    console.log('ob.lat = ' + String(ob.lat));
+    console.log('ob.lon = ' + String(ob.lon));
+    console.log('ob.observations' + String(ob.observations));
+    if(ob !== undefined && ob.description !== undefined && ob.lat !== undefined  && ob.lon !== undefined  && ob.observations !== undefined ){
+        console.log('passed first barrier');
+        if(-90 >= ob.lat >= 90){//enþá að fikkta
+            if((typeof(ob.lon) == Number) && (-180 >= ob.lon >= 180)){
+                return true;
+            }
         }
+    }
+        return false;
+}
+
+exports.observationValidation = function(ob){
+    if(ob.temp !== undefined && ob.windSpeed !== undefined && ob.windDir !== undefined && ob.prec !== undefined && ob.hum !== undefined){
+        return true;
     }
     return false;
 }

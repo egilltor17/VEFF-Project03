@@ -4,6 +4,7 @@ const http = require("http");
 const express = require("express");
 const app = express();
 const url = require("body-parser");
+const logic = require("./logic.js");
 const hostname = "127.0.0.1";
 const port = "3000";
 
@@ -98,23 +99,27 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 app.post('/api/v1/stations', (req, res)=> {
     console.log('initiated post request');
     console.log(req.body);
-    if(req.body === undefined || req.body.description === undefined || req.body.lat === undefined  || req.body.lon === undefined  || req.body.observations === undefined){
-        res.status(400).json({'message':'description, latitude, longitude and observations must be defined in request body'});
+    // console.log(new Date().getTime());
+    console.log(typeof(req.body.lat));
+    if(!logic.stationValidation(req.body)){
+        res.status(400).json({'message':'description, latitude, longitude and observations must be defined with valid parameters in request body'});
     }else{
         console.log('past test');
-        var long = Number(req.query.lon);
-        var lati = Number(req.query.lat);
-        var descr = req.query.description;
-        var obs = Number(req.query.observations);
-        var stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
+
+        let long = Number(req.body.lon);
+        let lati = Number(req.body.lat);
+        let descr = req.body.description;
+        let obs = req.body.observations;
+        let stationId =  5 /*ATH ÞARF AÐ BREYTA VANTAR ID GENERATOR*/ 
         newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+        console.log(newStation);
         stations.push(newStation);
-        res.status(201).send(newStation);
+        res.status(201).json(newStation);
     }
 });
 
 app.post('/api/v1/stations/:id/observations', (req, res) => {
-    if(req.body === undefined || req.body.temp === undefined || req.body.windSpeed === undefined || req.body.windDir === undefined || req.body.prec === undefined || req.body.hum === undefined){
+    if(logic.observationValidation(req)){
         res.status(400).json({'message':'temperature, wind speed, wind direction, precipitation and humidity must be defined in request body'});
     }
 
