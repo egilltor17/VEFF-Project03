@@ -67,3 +67,20 @@ exports.findStationWithID = function(stations, id) {
         }
     }
 }
+exports.updater = function(station, req){
+    var changesObject = {}
+    if(req.body.lat != undefined){
+        station.lat = req.body.lat;
+        changesObject.lat = req.body.lat;
+    }
+    if(req.body.lon != undefined){
+        station.lon = req.body.lon;
+        changesObject.lon = req.body.lon;
+    }
+    if(req.body.description != undefined){
+        station.description = req.body.description;
+        changesObject.description = req.body.description;
+    }
+    //Sleppi observations þar sem að það make-ar ekki sense
+    return changesObject
+    }
