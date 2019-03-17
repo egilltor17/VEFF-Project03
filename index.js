@@ -55,11 +55,6 @@ var errorMessages = [
 /* GET requests                                                                                 */
 /* ============================================================================================ */
 
-app.get('/api/v1', (req, res) => {
-    res.status(200).json({message: "welcome to our api."});
-});
-
-
 /* 
     s1. Read all stations
         Returns an array of all stations. For each station, 
@@ -164,7 +159,7 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
         Creates a new station. The endpoint expects all attributes apart 
         from the id in the request body. The id shall be auto-generated. 
         The request, if successful, shall return the new station 
-        (all attributes,including id).
+        (all attributes, including id).
 */
 app.post('/api/v1/stations', (req, res)=> {
     let validationMsg = logic.stationValidation(req.body);
@@ -233,27 +228,28 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
         The request, if successful, returns all updated attributes of the station.
 */
 app.put('/api/v1/stations/:sId',(req,res)=>{
-    // (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id).
-    // The request, if successful, returns all updated attributes of the station
     for(let i= 0; i < stations.length; i++){
         if(stations[i].id === Number(req.params.sId)) {
-            let changes = logic.updater(stations[i],req);
-            res.status(200).json(changes);
+            validationMsg = logic.stationValidation(req.body);
+            if(validationMsg > 0) {
+                res.status(400).json({'message':errorMessages[validationMsg]});
+            } 
+            else {
+                stations[i].lat = req.body.lat;
+                stations[i].lon = req.body.lon;
+                stations[i].description = req.body.description;
+            res.status(200).json(stations[i]);
             return;
+        }
         }
     }
     res.status(404).send("message: station not found.");
 })
 
+
 /* ============================================================================================ */
 /* DELETE requests                                                                              */
 /* ============================================================================================ */
-
-app.delete('/api/v1', (req, res) => {
-    console.log("doomsday is upon us!");
-    res.status(405).json({message: "method not allowed."});
-});
-
 
 /*  
    s6. Delete all stations
