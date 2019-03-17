@@ -8,7 +8,7 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
-app.use(url.json());
+// app.use(url.json());
 
 http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
 // app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
@@ -118,13 +118,15 @@ app.post('/api/v1/stations', (req, res)=> {
     if(validationMsg > 0) {
         res.status(400).json({message: errorMessages[validationMsg]});
     } else {
-        let newStation = Object({
-                                    id:             logic.getNewStationId(), 
-                                    description:    req.body.description, 
-                                    lon:            Number(req.body.lon),
-                                    lat:            Number(req.body.lat),
-                                    observations:   []
-                                });
+        let newStation = Object(
+            {
+                id:             logic.getNewStationId(), 
+                description:    req.body.description, 
+                lon:            Number(req.body.lon),
+                lat:            Number(req.body.lat),
+                observations:   []
+            }
+        );
         stations.push(newStation);
         res.status(201).json(newStation);
     }
@@ -135,15 +137,17 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
     if(validationMsg > 0) {
         res.status(400).json({message: errorMessages[validationMsg]});
     } else {
-        let newObservation = Object({
-                                        id:         logic.getNewObservationId(), 
-                                        date:       new Date().getTime(), 
-                                        temp:       Number(req.body.temp), 
-                                        windSpeed:  Number(req.body.windSpeed), 
-                                        windDir:    Number(req.body.windDir), 
-                                        prec:       Number(req.body.prec), 
-                                        hum:        Number(req.body.hum)
-                                    });
+        let newObservation = Object(
+            {
+                id:         logic.getNewObservationId(), 
+                date:       new Date().getTime(), 
+                temp:       Number(req.body.temp), 
+                windSpeed:  Number(req.body.windSpeed), 
+                windDir:    Number(req.body.windDir), 
+                prec:       Number(req.body.prec), 
+                hum:        Number(req.body.hum)
+            }
+        );
         let parentStation = logic.findStationWithID(stations, req.params.sId);
         if(parentStation !== null){
             console.log(parentStation.observations);
@@ -247,6 +251,13 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     res.status(404).json({message: "station not found."});
 });
 
+/* ============================================================================================ */
+/* Default: Not supported                                                                       */
+/* ============================================================================================ */
+
+app.use('*', (req, res) => {
+    res.status(405).json({message: "Operation not supported."});
+});
 
 /*
 1. Read all stations
