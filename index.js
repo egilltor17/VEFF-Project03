@@ -191,7 +191,7 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
 
 app.delete('/api/v1', (req, res) => {
     console.log("doomsday is upon us!");
-    res.status(405).json({message: "meathod not allowed."});
+    res.status(405).json({message: "method not allowed."});
 });
 
 app.delete('/api/v1/stations', (req, res) => {
@@ -227,7 +227,7 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
                 }
             }
             stations[i].observations = [];
-            res.status(202).json({message: "all observations for station " + req.params.sId + " has been deleted."});
+            res.status(202).json({message: "all observations for station " + req.params.sId + " have been deleted."});
             return;
         }
     }
