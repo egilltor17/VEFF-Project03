@@ -80,7 +80,7 @@ app.get('/api/v1/stations', (req, res) => {
 */
 app.get('/api/v1/stations/:sId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
             res.status(200).json(stations[i]);
             return;
         }
@@ -95,7 +95,7 @@ app.get('/api/v1/stations/:sId', (req, res) => {
 */
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
             let obs = [];
             for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
@@ -127,7 +127,7 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
 */
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
             for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     res.status(200).json(
@@ -205,10 +205,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
             }
         );
         let parentStation = logic.findStationWithID(stations, req.params.sId);
-        if(parentStation !== null){
-            console.log(parentStation.observations);
-            console.log(newObservation);
-            
+        if(parentStation !== null) {
             parentStation.observations.push(newObservation);
             observations.push(newObservation)
             res.status(201).json(newObservation);
@@ -219,7 +216,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
 })
 
 /* ============================================================================================ */
-/* UPDATE requests                                                                              */
+/* PUT requests                                                                                 */
 /* ============================================================================================ */
 
 /*  
@@ -229,7 +226,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
 */
 app.put('/api/v1/stations/:sId',(req,res)=>{
     for(let i= 0; i < stations.length; i++){
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
             validationMsg = logic.stationValidation(req.body);
             if(validationMsg > 0) {
                 res.status(400).json({'message':errorMessages[validationMsg]});
@@ -258,9 +255,9 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
         part of the observations attribute).
 */
 app.delete('/api/v1/stations', (req, res) => {
+    res.status(202).json({stations: stations, observations: observations});
     stations = [];
     observations = [];
-    res.status(202).json({message: "It's all gone! Everything! Just gone..."});
 });
 
 
@@ -272,16 +269,18 @@ app.delete('/api/v1/stations', (req, res) => {
 */
 app.delete('/api/v1/stations/:sId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
+            let obs = [];
             for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if(Number(observations[j].id) === Number(oId)) {
+                        obs.push(observations[j]);
                         observations.splice(j, 1);
                     }
                 });
             }
+            res.status(202).json({stations: stations[i], observations: obs});
             stations.splice(i, 1);
-            res.status(202).json({message: "station " + req.params.sId + " has been deleted along with all of it's observations."});
             return;
         }
     }
@@ -296,14 +295,16 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
 */
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
+            let obs = [];
             for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
+                    obs.push(observations[j]);
                     observations.splice(j, 1);
                 }
             }
             stations[i].observations = [];
-            res.status(202).json({message: "all observations for station " + req.params.sId + " have been deleted."});
+            res.status(202).json({observations: obs});
             return;
         }
     }
@@ -318,15 +319,15 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
 */
 app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
+        if(Number(stations[i].id) === Number(req.params.sId)) {
             for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
                     foundSomething = true;
-                    observations.splice(j, 1);
                     for(let k = 0; k < stations[i].observations.length; k++) {
                         if(Number(stations[i].observations[k].id) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
-                            res.status(202).json({message: "observation " + req.params.oId + " has been deleted."});
+                            res.status(202).json({observations: observations[j]});
+                            observations.splice(j, 1);
                             return;
                         }
                     }
