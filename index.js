@@ -13,7 +13,7 @@ const port = "3000";
 /* ============================================================================================ */
 
 
-// app.use(url.json());
+app.use(url.json());
 
 http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
 // app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
@@ -199,7 +199,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
                 date: new Date().getTime(), 
                 temp: Number(req.body.temp), 
                 windSpeed: Number(req.body.windSpeed), 
-                windDir: Number(req.body.windDir), 
+                windDir: req.body.windDir, 
                 prec: Number(req.body.prec), 
                 hum: Number(req.body.hum)
             }
