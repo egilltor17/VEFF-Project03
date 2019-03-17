@@ -8,14 +8,16 @@ const url = require("body-parser");
 const hostname = "127.0.0.1";
 const port = "3000";
 
+/* ============================================================================================ */
+/* Setup                                                                                        */
+/* ============================================================================================ */
+
+
 // app.use(url.json());
 
 http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
 // app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
-/* ============================================================================================ */
-/* Sample data                                                                                  */
-/* ============================================================================================ */
 
 //The following is an example of an array of two stations. 
 //The observation array includes the ids of the observations belonging to the specified station
@@ -57,14 +59,30 @@ app.get('/api/v1', (req, res) => {
     res.status(200).json({message: "welcome to our api."});
 });
 
+
+/* 
+    s1. Read all stations
+        Returns an array of all stations. For each station, 
+        only the description and the id is included in theresponse. 
+*/
 app.get('/api/v1/stations', (req, res) => {
     let shortStations = [];
     stations.forEach(station => {
-        shortStations.push({id: station.id, description: station.description});
+        shortStations.push(
+            {
+                id: station.id, 
+                description: station.description
+            }
+        );
     });
     res.status(200).json(shortStations);
 });
 
+
+/* 
+    s2. Read an individual station 
+        Returns all attributes of a specified station. 
+*/
 app.get('/api/v1/stations/:sId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
@@ -75,6 +93,11 @@ app.get('/api/v1/stations/:sId', (req, res) => {
     res.status(404).json({message: "station not found."});
 });
 
+
+/*  
+    o1. Read all observations for a station
+        Returns an array of all observations (with all attributes) for a specified station.
+*/
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
@@ -82,7 +105,16 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if(Number(observations[j].id) === Number(oId)) {
-                        obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                        obs.push(
+                            {
+                                date: observations[j].date, 
+                                temp: observations[j].temp, 
+                                windSpeed: observations[j].windSpeed, 
+                                windDir: observations[j].windDir, 
+                                prec: observations[j].prec, 
+                                hum: observations[j].hum
+                            }
+                        );
                     }
                 });
             }
@@ -93,12 +125,26 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
     res.status(404).json({message: "station not found."});
 });
 
+
+/*  
+    o2. Read an individual observation
+        Returns all attributes of a specified observation (for a station).
+*/
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
             for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
-                    res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                    res.status(200).json(
+                        {
+                            date: observations[j].date, 
+                            temp: observations[j].temp, 
+                            windSpeed: observations[j].windSpeed, 
+                            windDir: observations[j].windDir, 
+                            prec: observations[j].prec, 
+                            hum: observations[j].hum
+                        }
+                    );
                     return;
                 }
             }
@@ -113,6 +159,13 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* POST requests                                                                                */
 /* ============================================================================================ */
 
+/*  
+    s3. Create a new station
+        Creates a new station. The endpoint expects all attributes apart 
+        from the id in the request body. The id shall be auto-generated. 
+        The request, if successful, shall return the new station 
+        (all attributes,including id).
+*/
 app.post('/api/v1/stations', (req, res)=> {
     let validationMsg = logic.stationValidation(req.body);
     if(validationMsg > 0) {
@@ -120,11 +173,11 @@ app.post('/api/v1/stations', (req, res)=> {
     } else {
         let newStation = Object(
             {
-                id:             logic.getNewStationId(), 
-                description:    req.body.description, 
-                lon:            Number(req.body.lon),
-                lat:            Number(req.body.lat),
-                observations:   []
+                id: logic.getNewStationId(), 
+                description: req.body.description, 
+                lon: Number(req.body.lon),
+                lat: Number(req.body.lat),
+                observations: []
             }
         );
         stations.push(newStation);
@@ -132,6 +185,14 @@ app.post('/api/v1/stations', (req, res)=> {
     }
 });
 
+
+/*  
+    o3. Create a new observation
+        Creates a new observation for a specified station. The endpoint expects all attributes 
+        apart from the id and the date in the request body. The id (unique, non-negative number) 
+        and the date (current date) shall be auto-generated. The request, if successful, 
+        shall return the new observation (all attributes, including id and date).
+*/
 app.post('/api/v1/stations/:sId/observations', (req, res) => {
     let validationMsg = logic.observationValidation(req.body);
     if(validationMsg > 0) {
@@ -139,13 +200,13 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
     } else {
         let newObservation = Object(
             {
-                id:         logic.getNewObservationId(), 
-                date:       new Date().getTime(), 
-                temp:       Number(req.body.temp), 
-                windSpeed:  Number(req.body.windSpeed), 
-                windDir:    Number(req.body.windDir), 
-                prec:       Number(req.body.prec), 
-                hum:        Number(req.body.hum)
+                id: logic.getNewObservationId(), 
+                date: new Date().getTime(), 
+                temp: Number(req.body.temp), 
+                windSpeed: Number(req.body.windSpeed), 
+                windDir: Number(req.body.windDir), 
+                prec: Number(req.body.prec), 
+                hum: Number(req.body.hum)
             }
         );
         let parentStation = logic.findStationWithID(stations, req.params.sId);
@@ -166,6 +227,11 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
 /* UPDATE requests                                                                              */
 /* ============================================================================================ */
 
+/*  
+    s5. Update a station
+        (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id). 
+        The request, if successful, returns all updated attributes of the station.
+*/
 app.put('/api/v1/stations/:sId',(req,res)=>{
     // (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id).
     // The request, if successful, returns all updated attributes of the station
@@ -188,12 +254,26 @@ app.delete('/api/v1', (req, res) => {
     res.status(405).json({message: "method not allowed."});
 });
 
+
+/*  
+   s6. Delete all stations
+        Deletes all existing stations. The request also deletes all observations for all existing stations. The
+        request, if successful, returns all deleted stations (all attributes), as well as their observations (as a
+        part of the observations attribute).
+*/
 app.delete('/api/v1/stations', (req, res) => {
     stations = [];
     observations = [];
     res.status(202).json({message: "It's all gone! Everything! Just gone..."});
 });
 
+
+/*  
+    s4. Delete a station
+        Deletes an existing station. The request also deletes all observations for the given station. 
+        The request, if successful, returns all attributes of the deleted station 
+        (including all observations in the observations attribute).
+*/
 app.delete('/api/v1/stations/:sId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
@@ -212,6 +292,12 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
     res.status(404).json({message: "station not found"});
 });
 
+
+/*  
+    o5. Delete all observations for a station
+        Deletes all existing observations for a specified station. The request, 
+        if successful, returns all deleted observations (all attributes).
+*/
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
@@ -228,6 +314,12 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
     res.status(404).json({message: "station not found."});
 });
 
+
+/*  
+    o4. Delete an observation
+        Deletes an existing observation for a specified station. The request, 
+        if successful, returns all attributes of the deleted observations[j].
+*/
 app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(stations[i].id === Number(req.params.sId)) {
@@ -260,38 +352,38 @@ app.use('*', (req, res) => {
 });
 
 /*
-1. Read all stations
-    Returns an array of all stations. For each station, only the description and the id is included in the
-    response.
-2. Read an individual station 
-    Returns all attributes of a specified station.
-3. Create a new station
-    Creates a new station. The endpoint expects all attributes apart from the id in the request body. The
-    id shall be auto-generated. The request, if successful, shall return the new station (all attributes,including id).
-4. Delete a station
-    Deletes an existing station. The request also deletes all observations for the given station. The
-    request, if successful, returns all attributes of the deleted station (including all observations in the
-    observations attribute).
-5. Update a station
-    (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id). The request, if successful, returns all updated attributes of the station.
-6. Delete all stations
-    Deletes all existing stations. The request also deletes all observations for all existing stations. The
-    request, if successful, returns all deleted stations (all attributes), as well as their observations (as a
-    part of the observations attribute).
+    s1. Read all stations
+        Returns an array of all stations. For each station, only the description and the id is included in the
+        response.
+    s2. Read an individual station 
+        Returns all attributes of a specified station.
+    s3. Create a new station
+        Creates a new station. The endpoint expects all attributes apart from the id in the request body. The
+        id shall be auto-generated. The request, if successful, shall return the new station (all attributes,including id).
+    s4. Delete a station
+        Deletes an existing station. The request also deletes all observations for the given station. The
+        request, if successful, returns all attributes of the deleted station (including all observations in the
+        observations attribute).
+    s5. Update a station
+        (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id). The request, if successful, returns all updated attributes of the station.
+    s6. Delete all stations
+        Deletes all existing stations. The request also deletes all observations for all existing stations. The
+        request, if successful, returns all deleted stations (all attributes), as well as their observations (as a
+        part of the observations attribute).
 
 
-1. Read all observations for a station
-    Returns an array of all observations (with all attributes) for a specified station.
-2. Read an individual observation
-    Returns all attributes of a specified observation (for a station).
-3. Create a new observation
-    Creates a new observation for a specified station. The endpoint expects all attributes apart from the
-    id and the date in the request body. The id (unique, non-negative number) and the date (current date)
-    shall be auto-generated. The request, if successful, shall return the new observation (all attributes,
-    including id and date).
-4. Delete an observation
-    Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observations[j].
-5. Delete all observations for a station
-    Deletes all existing observations for a specified station. The request, if successful, returns all deleted
-    observations (all attributes).
+    o1. Read all observations for a station
+        Returns an array of all observations (with all attributes) for a specified station.
+    o2. Read an individual observation
+        Returns all attributes of a specified observation (for a station).
+    o3. Create a new observation
+        Creates a new observation for a specified station. The endpoint expects all attributes apart from the
+        id and the date in the request body. The id (unique, non-negative number) and the date (current date)
+        shall be auto-generated. The request, if successful, shall return the new observation (all attributes,
+        including id and date).
+    o4. Delete an observation
+        Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observations[j].
+    o5. Delete all observations for a station
+        Deletes all existing observations for a specified station. The request, if successful, returns all deleted
+        observations (all attributes).
 */
