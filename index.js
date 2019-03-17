@@ -5,18 +5,16 @@ const logic = require("./logic");
 const express = require("express");
 const app = express();
 const url = require("body-parser");
-const hostname = "127.0.0.1";
 const port = "3000";
 
 /* ============================================================================================ */
 /* Setup                                                                                        */
 /* ============================================================================================ */
 
+// app.use(url.json());
 
-app.use(url.json());
-
-http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
-// app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
+// http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
+app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
 
 //The following is an example of an array of two stations. 
@@ -63,12 +61,7 @@ var errorMessages = [
 app.get('/api/v1/stations', (req, res) => {
     let shortStations = [];
     stations.forEach(station => {
-        shortStations.push(
-            {
-                id: station.id, 
-                description: station.description
-            }
-        );
+        shortStations.push({id: station.id, description: station.description});
     });
     res.status(200).json(shortStations);
 });
@@ -162,9 +155,9 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
         (all attributes, including id).
 */
 app.post('/api/v1/stations', (req, res)=> {
-    let validationMsg = logic.stationValidation(req.body);
-    if(validationMsg > 0) {
-        res.status(400).json({message: errorMessages[validationMsg]});
+    let validationCode = logic.stationValidation(req.body);
+    if(validationCode) {
+        res.status(400).json({message: errorMessages[validationCode]});
     } else {
         let newStation = Object(
             {
@@ -189,9 +182,9 @@ app.post('/api/v1/stations', (req, res)=> {
         shall return the new observation (all attributes, including id and date).
 */
 app.post('/api/v1/stations/:sId/observations', (req, res) => {
-    let validationMsg = logic.observationValidation(req.body);
-    if(validationMsg > 0) {
-        res.status(400).json({message: errorMessages[validationMsg]});
+    let validationCode = logic.observationValidation(req.body);
+    if(validationCode) {
+        res.status(400).json({message: errorMessages[validationCode]});
     } else {
         let newObservation = Object(
             {
@@ -227,9 +220,9 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
 app.put('/api/v1/stations/:sId',(req,res)=>{
     for(let i= 0; i < stations.length; i++){
         if(Number(stations[i].id) === Number(req.params.sId)) {
-            validationMsg = logic.stationValidation(req.body);
-            if(validationMsg > 0) {
-                res.status(400).json({'message':errorMessages[validationMsg]});
+            validationCode = logic.stationValidation(req.body);
+            if(validationCode > 0) {
+                res.status(400).json({'message':errorMessages[validationCode]});
             } 
             else {
                 stations[i].lat = req.body.lat;
@@ -268,19 +261,17 @@ app.delete('/api/v1/stations', (req, res) => {
         (including all observations in the observations attribute).
 */
 app.delete('/api/v1/stations/:sId', (req, res) => {
+    let obs = [];
     for(let i = 0; i < stations.length; i++) {
         if(Number(stations[i].id) === Number(req.params.sId)) {
-            let obs = [];
             for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if(Number(observations[j].id) === Number(oId)) {
-                        obs.push(observations[j]);
-                        observations.splice(j, 1);
+                        obs.push(observations.splice(j--, 1));
                     }
                 });
             }
-            res.status(202).json({stations: stations[i], observations: obs});
-            stations.splice(i, 1);
+            res.status(202).json({stations: stations.splice(i, 1), observations: obs});
             return;
         }
     }
@@ -294,18 +285,13 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
         if successful, returns all deleted observations (all attributes).
 */
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
+    let obs = [];
     for(let i = 0; i < stations.length; i++) {
         if(Number(stations[i].id) === Number(req.params.sId)) {
-            let obs = [];
-            let observid = stations[i].observations[0].id
             for(let j = 0; j < observations.length; j++) {
-                if(Number(observations[j].id) === Number(observid)) {
-                    stations[i].observations.splice(0,1)
-                    obs.push(observations[j]);
-                    observations.splice(j, 1);
-                    if (stations[i].observations.length >= 1){
-                        observid = stations[i].observations[0].id;
-                        j -= 1;
+                for(let k = 0; k < stations[i].observations.length; k++) {
+                    if(Number(observations[j].id) === Number(stations[i].observations[k])) {
+                        obs.push(observations.splice(j--, 1));
                     }
                 }
             }
@@ -328,12 +314,10 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
         if(Number(stations[i].id) === Number(req.params.sId)) {
             for(let j = 0; j < observations.length; j++) {
                 if(Number(observations[j].id) === Number(req.params.oId)) {
-                    foundSomething = true;
                     for(let k = 0; k < stations[i].observations.length; k++) {
-                        if(Number(stations[i].observations[k].id) === Number(req.params.oId)) {
+                        if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
-                            res.status(202).json({observations: observations[j]});
-                            observations.splice(j, 1);
+                            res.status(202).json({observations: observations.splice(j, 1)});
                             return;
                         }
                     }
