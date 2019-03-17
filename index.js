@@ -160,6 +160,7 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
             console.log(newObservation);
             
             parentStation.observations.push(newObservation);
+            observations.push(newObservation)
             res.status(201).json(newObservation);
         }else{
             res.status(404).json({message:"station not found."});
@@ -242,7 +243,7 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     foundSomething = true;
                     observations.splice(j, 1);
                     for(let k = 0; k < stations[i].observations.length; k++) {
-                        if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
+                        if(Number(stations[i].observations[k].id) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
                             res.status(202).json({message: "observation " + req.params.oId + " has been deleted."});
                             return;
