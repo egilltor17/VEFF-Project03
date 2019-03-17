@@ -60,7 +60,7 @@ app.get('/api/v1', (req, res) => {
 app.get('/api/v1/stations', (req, res) => {
     let shortStations = [];
     stations.forEach(station => {
-        shortStations.push({id: stations[i].id, description: stations[i].description});
+        shortStations.push({id: station.id, description: station.description});
     });
     res.status(200).json(shortStations);
 });
