@@ -108,74 +108,23 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     }
     res.status(404).json({message: "station not found."});
 });
-/* 
-app.get('/api/v1/stations/:sId/observations', (req, res) => {
-    // for(let i = 0; i < stations.length; i++) {
-    //     if(stations[i].id === Number(req.params.sId)) {
-        let stationId = logic.findStationWithID(stations, req.params.sId);
-        if(stationId !== null){
-            let obs = [];
-            for(let j = 0; j < stationId.observations.length; j++) {
-                // stations[i].observations.forEach(oId =>{
-                    //     if(Number(observations[j].id) === Number(oId)) {
-                        //         obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
-                        //     }
-                        // });
-                        obs.push({id: stationId.observations[j].id, date: stationId.observations[j].date, temp: stationId.observations[j].temp, windSpeed: stationId.observations[j].windSpeed, windDir: stationId.observations[j].windDir, prec: stationId.observations[j].prec, hum: stationId.observations[j].hum});
-                    }
-                    res.status(200).json(obs);
-                    return;
-                }else{
-                    res.status(404).json({message: "station not found."});
-                }
-    //     }
-    // }
-    res.status(404).json({message: "station not found."});
-});
 
-app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    // for(let i = 0; i < stations.length; i++) {
-    //     if(stations[i].id === Number(req.params.sId)) {
-        stationId = logic.findStationWithID(stations, req.params.sId)
-        if(stationId !== null){
-            for(let j = 0; j < stationId.observations.length; j++) {
-                if(Number(stationId.observations[j].id) === Number(req.params.oId)) {
-                    res.status(200).json({date: stationId.observations[j].date, temp: stationId.observations[j].temp, windSpeed: stationId.observations[j].windSpeed, windDir: stationId.observations[j].windDir, prec: stationId.observations[j].prec, hum: stationId.observations[j].hum});
-                    return;
-                }
-            }
-            res.status(404).json({message: "observation not found."});
-        }else{
-            res.status(404).json({message: "station not found."});           
-        }
-    //     }
-    // }
-    // res.status(404).json({message: "station not found."});
-});
-*/
 /* ============================================================================================ */
 /* POST requests                                                                                */
 /* ============================================================================================ */
+
 app.post('/api/v1/stations', (req, res)=> {
     let validationMsg = logic.stationValidation(req.body);
     if(validationMsg > 0) {
         res.status(400).json({message: errorMessages[validationMsg]});
     } else {
-        /* 
-        let long = Number(req.body.lon);
-        let lati = Number(req.body.lat);
-        let descr = req.body.description;
-        let stationId =  logic.getNewStationId();
-        
-        newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations: []});
-         */
-        newStation = Object({
-                                id:             logic.getNewStationId(), 
-                                description:    req.body.description, 
-                                lon:            Number(req.body.lon),
-                                lat:            Number(req.body.lat),
-                                observations:   []
-                            });
+        let newStation = Object({
+                                    id:             logic.getNewStationId(), 
+                                    description:    req.body.description, 
+                                    lon:            Number(req.body.lon),
+                                    lat:            Number(req.body.lat),
+                                    observations:   []
+                                });
         stations.push(newStation);
         res.status(201).json(newStation);
     }
@@ -185,18 +134,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
     let validationMsg = logic.observationValidation(req.body);
     if(validationMsg > 0) {
         res.status(400).json({message: errorMessages[validationMsg]});
-    } else {   
-        /* 
-        let temperature = Number(req.body.temp);
-        let tmpWindSpeed = Number(req.body.windSpeed);
-        let tmpWindDirection = req.body.windDir;
-        let precip = Number(req.body.prec);
-        let humidity = Number(req.body.hum);
-        let tmpId = logic.getNewObservationId();
-        let time = new Date().getTime();
-        
-        let newObservation = Object({id: tmpId, date: time, temp: temperature, windSpeed: tmpWindSpeed, windDir: tmpWindDirection, prec: precip, hum: humidity});
-         */
+    } else {
         let newObservation = Object({
                                         id:         logic.getNewObservationId(), 
                                         date:       new Date().getTime(), 
@@ -223,6 +161,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
 /* ============================================================================================ */
 /* UPDATE requests                                                                              */
 /* ============================================================================================ */
+
 app.put('/api/v1/stations/:sId',(req,res)=>{
     // (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id).
     // The request, if successful, returns all updated attributes of the station
@@ -235,8 +174,6 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
     }
     res.status(404).send("message: station not found.");
 })
-
-
 
 /* ============================================================================================ */
 /* DELETE requests                                                                              */
