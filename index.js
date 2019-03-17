@@ -100,18 +100,23 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === Number(req.params.sId)) {
-            for(let j = 0; j < observations.length; j++) {
-                if(Number(observations[j].id) === Number(req.params.oId)) {
-                    res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+    // for(let i = 0; i < stations.length; i++) {
+    //     if(stations[i].id === Number(req.params.sId)) {
+        stationId = logic.findStationWithID(stations, req.params.sId)
+        if(stationId !== null){
+            for(let j = 0; j < stationId.observations.length; j++) {
+                if(Number(stationId.observations[j].id) === Number(req.params.oId)) {
+                    res.status(200).json({date: stationId.observations[j].date, temp: stationId.observations[j].temp, windSpeed: stationId.observations[j].windSpeed, windDir: stationId.observations[j].windDir, prec: stationId.observations[j].prec, hum: stationId.observations[j].hum});
                     return;
                 }
             }
             res.status(404).json({message: "observation not found."});
+        }else{
+            res.status(404).json({message: "station not found."});           
         }
-    }
-    res.status(404).json({message: "station not found."});
+    //     }
+    // }
+    // res.status(404).json({message: "station not found."});
 });
 
 /* ============================================================================================ */
@@ -125,7 +130,8 @@ app.post('/api/v1/stations', (req, res)=> {
         let long = Number(req.body.lon);
         let lati = Number(req.body.lat);
         let descr = req.body.description;
-        let obs = req.body.observations;
+        // let obs = req.body.observations;
+        let obs = [];
         let stationId =  logic.getNewStationId();
         
         newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
@@ -149,11 +155,15 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
         
         let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
         let parentStation = logic.findStationWithID(stations, req.params.id);
-        console.log(parentStation.observations);
-        console.log(newObservation);
-        
-        parentStation.observations.push(newObservation);
-        res.status(201).json(newObservation);
+        if(parentStation !== null){
+            console.log(parentStation.observations);
+            console.log(newObservation);
+            
+            parentStation.observations.push(newObservation);
+            res.status(201).json(newObservation);
+        }else{
+            res.status(404).json({message:"station not found."});
+        }
     }
 })
 
