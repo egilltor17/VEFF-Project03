@@ -211,7 +211,7 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
                 });
             }
             stations.splice(i, 1);
-            res.status(202).json({message: "station " + req.params.sId + " has been deleated along with all of it's observations."});
+            res.status(202).json({message: "station " + req.params.sId + " has been deleted along with all of it's observations."});
             return;
         }
     }
@@ -227,7 +227,7 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
                 }
             }
             stations[i].observations = [];
-            res.status(202).json({message: "all observations for station " + req.params.sId + " has been deleated."});
+            res.status(202).json({message: "all observations for station " + req.params.sId + " has been deleted."});
             return;
         }
     }
@@ -244,7 +244,7 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     for(let k = 0; k < stations[i].observations.length; k++) {
                         if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
-                            res.status(202).json({message: "observation " + req.params.oId + " has been deleated."});
+                            res.status(202).json({message: "observation " + req.params.oId + " has been deleted."});
                             return;
                         }
                     }
