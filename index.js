@@ -173,17 +173,16 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
 app.put('/api/v1/stations/:sId',(req,res)=>{
     // (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id).
     // The request, if successful, returns all updated attributes of the station
-    let i = 0
-    while (i < stations.length){
+    for(let i= 0; i < stations.length; i++){
         if(stations[i].id === Number(req.params.sId)) {
             let changes = logic.updater(stations[i],req);
             res.status(200).json(changes);
-            return
+            return;
         }
-        i++;
     }
     res.status(404).send("message: station not found.");
-});
+})
+
 
 
 /* ============================================================================================ */
