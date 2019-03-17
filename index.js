@@ -20,7 +20,7 @@ http.createServer(app).listen(port, () => console.log(`Weather app listening on 
 //The following is an example of an array of two stations. 
 //The observation array includes the ids of the observations belonging to the specified station
 var stations = [
-    {id: 1, description: "Reykjavik", lat: 64.1275, lon: -21.9028, observations: []},
+    {id: 1, description: "Reykjavik", lat: 64.1275, lon: -21.9028, observations: [2, 3]},
     {id: 422, description: "Akureyri", lat: 65.6856, lon: -18.1002, observations: [1]},
     {id: 801, description: "Egilsstaðir", lat: 66.9456, lon: -13.1002, observations: [4, 5, 6]}
 ];
@@ -76,14 +76,48 @@ app.get('/api/v1/stations/:sId', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
+    for(let i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            let obs = [];
+            for(let j = 0; j < observations.length; j++) {
+                stations[i].observations.forEach(oId =>{
+                    if(Number(observations[j].id) === Number(oId)) {
+                        obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                    }
+                });
+            }
+            res.status(200).json(obs);
+            return;
+        }
+    }
+    res.status(404).json({message: "station not found."});
+});
+
+app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
+    for(let i = 0; i < stations.length; i++) {
+        if(stations[i].id === Number(req.params.sId)) {
+            for(let j = 0; j < observations.length; j++) {
+                if(Number(observations[j].id) === Number(req.params.oId)) {
+                    res.status(200).json({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                    return;
+                }
+            }
+            res.status(404).json({message: "observation not found."});
+            return;
+        }
+    }
+    res.status(404).json({message: "station not found."});
+});
+/* 
+app.get('/api/v1/stations/:sId/observations', (req, res) => {
     // for(let i = 0; i < stations.length; i++) {
-    //     if(stations[i].id === (Number)(req.params.sId)) {
+    //     if(stations[i].id === Number(req.params.sId)) {
         let stationId = logic.findStationWithID(stations, req.params.sId);
         if(stationId !== null){
             let obs = [];
             for(let j = 0; j < stationId.observations.length; j++) {
                 // stations[i].observations.forEach(oId =>{
-                    //     if((Number)(observations[j].id) === (Number)(oId)) {
+                    //     if(Number(observations[j].id) === Number(oId)) {
                         //         obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
                         //     }
                         // });
@@ -118,33 +152,41 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
     // }
     // res.status(404).json({message: "station not found."});
 });
-
+*/
 /* ============================================================================================ */
 /* POST requests                                                                                */
 /* ============================================================================================ */
 app.post('/api/v1/stations', (req, res)=> {
     let validationMsg = logic.stationValidation(req.body);
     if(validationMsg > 0) {
-        res.status(400).json({'message':errorMessages[validationMsg]});
+        res.status(400).json({message: errorMessages[validationMsg]});
     } else {
+        /* 
         let long = Number(req.body.lon);
         let lati = Number(req.body.lat);
         let descr = req.body.description;
-        // let obs = req.body.observations;
-        let obs = [];
         let stationId =  logic.getNewStationId();
         
-        newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations:obs});
+        newStation = Object({id: stationId, lon: long, lat: lati, description: descr, observations: []});
+         */
+        newStation = Object({
+                                id:             logic.getNewStationId(), 
+                                description:    req.body.description, 
+                                lon:            Number(req.body.lon),
+                                lat:            Number(req.body.lat),
+                                observations:   []
+                            });
         stations.push(newStation);
         res.status(201).json(newStation);
     }
 });
 
-app.post('/api/v1/stations/:id/observations', (req, res) => {
+app.post('/api/v1/stations/:sId/observations', (req, res) => {
     let validationMsg = logic.observationValidation(req.body);
     if(validationMsg > 0) {
-        res.status(400).json({'message':errorMessages[validationMsg]});
+        res.status(400).json({message: errorMessages[validationMsg]});
     } else {   
+        /* 
         let temperature = Number(req.body.temp);
         let tmpWindSpeed = Number(req.body.windSpeed);
         let tmpWindDirection = req.body.windDir;
@@ -153,17 +195,27 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
         let tmpId = logic.getNewObservationId();
         let time = new Date().getTime();
         
-        let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
-        let parentStation = logic.findStationWithID(stations, req.params.id);
+        let newObservation = Object({id: tmpId, date: time, temp: temperature, windSpeed: tmpWindSpeed, windDir: tmpWindDirection, prec: precip, hum: humidity});
+         */
+        let newObservation = Object({
+                                        id:         logic.getNewObservationId(), 
+                                        date:       new Date().getTime(), 
+                                        temp:       Number(req.body.temp), 
+                                        windSpeed:  Number(req.body.windSpeed), 
+                                        windDir:    Number(req.body.windDir), 
+                                        prec:       Number(req.body.prec), 
+                                        hum:        Number(req.body.hum)
+                                    });
+        let parentStation = logic.findStationWithID(stations, req.params.sId);
         if(parentStation !== null){
             console.log(parentStation.observations);
             console.log(newObservation);
             
             parentStation.observations.push(newObservation);
             res.status(201).json(newObservation);
-        }else{
-            res.status(404).json({message:"station not found."});
+            return;
         }
+        res.status(404).json({message: "station not found."});
     }
 })
 
@@ -251,6 +303,7 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                 }
             }
         res.status(404).json({message: "observation not found."});
+        return;
         }
     }
     res.status(404).json({message: "station not found."});
