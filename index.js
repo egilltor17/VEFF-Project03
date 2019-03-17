@@ -60,7 +60,7 @@ app.get('/api/v1', (req, res) => {
 app.get('/api/v1/stations', (req, res) => {
     let shortStations = [];
     stations.forEach(station => {
-        shortStations.push({id: station.id, description: station.description});
+        shortStations.push({id: stations[i].id, description: stations[i].description});
     });
     res.status(200).json(shortStations);
 });
@@ -195,8 +195,8 @@ app.delete('/api/v1', (req, res) => {
 });
 
 app.delete('/api/v1/stations', (req, res) => {
-    stations = {};
-    observations = {};
+    stations = [];
+    observations = [];
     res.status(202).json({message: "It's all gone! Everything! Just gone..."});
 });
 
