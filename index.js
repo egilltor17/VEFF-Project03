@@ -297,10 +297,16 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
     for(let i = 0; i < stations.length; i++) {
         if(Number(stations[i].id) === Number(req.params.sId)) {
             let obs = [];
+            let observid = stations[i].observations[0].id
             for(let j = 0; j < observations.length; j++) {
-                if(Number(observations[j].id) === Number(req.params.oId)) {
+                if(Number(observations[j].id) === Number(observid)) {
+                    stations[i].observations.splice(0,1)
                     obs.push(observations[j]);
                     observations.splice(j, 1);
+                    if (stations[i].observations.length >= 1){
+                        observid = stations[i].observations[0].id;
+                        j -= 1;
+                    }
                 }
             }
             stations[i].observations = [];
