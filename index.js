@@ -20,7 +20,7 @@ http.createServer(app).listen(port, () => console.log(`Weather app listening on 
 //The following is an example of an array of two stations. 
 //The observation array includes the ids of the observations belonging to the specified station
 var stations = [
-    {id: 1, description: "Reykjavik", lat: 64.1275, lon: -21.9028, observations: [2, 3]},
+    {id: 1, description: "Reykjavik", lat: 64.1275, lon: -21.9028, observations: []},
     {id: 422, description: "Akureyri", lat: 65.6856, lon: -18.1002, observations: [1]},
     {id: 801, description: "Egilsstaðir", lat: 66.9456, lon: -13.1002, observations: [4, 5, 6]}
 ];
@@ -76,20 +76,26 @@ app.get('/api/v1/stations/:sId', (req, res) => {
 });
 
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
-        if(stations[i].id === (Number)(req.params.sId)) {
+    // for(let i = 0; i < stations.length; i++) {
+    //     if(stations[i].id === (Number)(req.params.sId)) {
+        let stationId = logic.findStationWithID(stations, req.params.sId);
+        if(stationId !== null){
             let obs = [];
-            for(let j = 0; j < observations.length; j++) {
-                stations[i].observations.forEach(oId =>{
-                    if((Number)(observations[j].id) === (Number)(oId)) {
-                        obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+            for(let j = 0; j < stationId.observations.length; j++) {
+                // stations[i].observations.forEach(oId =>{
+                    //     if((Number)(observations[j].id) === (Number)(oId)) {
+                        //         obs.push({date: observations[j].date, temp: observations[j].temp, windSpeed: observations[j].windSpeed, windDir: observations[j].windDir, prec: observations[j].prec, hum: observations[j].hum});
+                        //     }
+                        // });
+                        obs.push({id: stationId.observations[j].id, date: stationId.observations[j].date, temp: stationId.observations[j].temp, windSpeed: stationId.observations[j].windSpeed, windDir: stationId.observations[j].windDir, prec: stationId.observations[j].prec, hum: stationId.observations[j].hum});
                     }
-                });
-            }
-            res.status(200).json(obs);
-            return;
-        }
-    }
+                    res.status(200).json(obs);
+                    return;
+                }else{
+                    res.status(404).json({message: "station not found."});
+                }
+    //     }
+    // }
     res.status(404).json({message: "station not found."});
 });
 
@@ -143,6 +149,8 @@ app.post('/api/v1/stations/:id/observations', (req, res) => {
         
         let newObservation = Object({id:tmpId, date:time, temp:temperature, windSpeed:tmpWindSpeed, windDir:tmpWindDirection, prec:precip, hum:humidity});
         let parentStation = logic.findStationWithID(stations, req.params.id);
+        console.log(parentStation.observations);
+        console.log(newObservation);
         
         parentStation.observations.push(newObservation);
         res.status(201).json(newObservation);

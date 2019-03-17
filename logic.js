@@ -55,6 +55,7 @@ exports.findStationWithID = function(stations, id) {
             return stations[i];
         }
     }
+    return null;
 }
 exports.updater = function(station, req){
     var changesObject = {}
