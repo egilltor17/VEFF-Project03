@@ -1,6 +1,4 @@
 // Project 03/index.js
-
-const http = require('http');
 const logic = require('./logic');
 const express = require('express');
 const app = express();
@@ -12,30 +10,10 @@ const port = '3000';
 /* ============================================================================================ */
 
 app.use(url.json());
-
-// http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
 app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 
-
-//The following is an example of an array of two stations. 
-//The observation array includes the ids of the observations belonging to the specified station
-var stations = [
-    {id: 1, description: 'Reykjavik', lat: 64.1275, lon: -21.9028, observations: [2, 3]},
-    {id: 422, description: 'Akureyri', lat: 65.6856, lon: -18.1002, observations: [1]},
-    {id: 801, description: 'Egilsstaðir', lat: 66.9456, lon: -13.1002, observations: [4, 5, 6]}
-];
-
-//The following is an example of an array of two observations.
-//Note that an observation does not know which station it belongs to!
-var observations = [
-    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: 'ese', prec: 0.0, hum: 82.0},
-    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: 'n', prec: 0.0, hum: 50.0},
-    {id: 3, date: 1551885138664, temp: 5.3, windSpeed: 3.2, windDir: 'ne', prec: 0.0, hum: 71.9},
-    {id: 4, date: 1551882446464, temp: 22.3, windSpeed: 0.2, windDir: 'e', prec: 0.0, hum: 77.2},
-    {id: 5, date: 1551883466464, temp: 26.3, windSpeed: 15.7, windDir: 'sw', prec: 0.0, hum: 84.7},
-    {id: 6, date: 1551884464764, temp: 25.3, windSpeed: 30.4, windDir: 'nw', prec: 0.0, hum: 74.0}
-];
-
+var stations = [];
+var observations = [];
 var errorMessages = [
     'All good.',
     'The request body is undefined.',
@@ -61,7 +39,7 @@ var errorMessages = [
 app.get('/api/v1/stations', (req, res) => {
     let shortStations = [];
     stations.forEach(station => {
-        shortStations.push({id: station.id, description: station.description});
+        shortStations.push({ id: station.id, description: station.description });
     });
     res.status(200).json(shortStations);
 });
@@ -72,13 +50,13 @@ app.get('/api/v1/stations', (req, res) => {
         Returns all attributes of a specified station. 
 */
 app.get('/api/v1/stations/:sId', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
-        if(Number(stations[i].id) === Number(req.params.sId)) {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
             res.status(200).json(stations[i]);
             return;
         }
     }
-    res.status(404).json({message: 'station not found.'});
+    res.status(404).json({ message: 'station not found.' });
 });
 
 
@@ -87,12 +65,12 @@ app.get('/api/v1/stations/:sId', (req, res) => {
         Returns an array of all observations (with all attributes) for a specified station.
 */
 app.get('/api/v1/stations/:sId/observations', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
-        if(Number(stations[i].id) === Number(req.params.sId)) {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
             let obs = [];
-            for(let j = 0; j < observations.length; j++) {
-                stations[i].observations.forEach(oId =>{
-                    if(Number(observations[j].id) === Number(oId)) {
+            for (let j = 0; j < observations.length; j++) {
+                stations[i].observations.forEach(oId => {
+                    if (Number(observations[j].id) === Number(oId)) {
                         obs.push(observations[j]);
                     }
                 });
@@ -101,7 +79,7 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             return;
         }
     }
-    res.status(404).json({message: 'station not found.'});
+    res.status(404).json({ message: 'station not found.' });
 });
 
 
@@ -110,28 +88,28 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
         Returns all attributes of a specified observation (for a station).
 */
 app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
-        if(Number(stations[i].id) === Number(req.params.sId)) {
-            for(let j = 0; j < observations.length; j++) {
-                if(Number(observations[j].id) === Number(req.params.oId)) {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
+            for (let j = 0; j < observations.length; j++) {
+                if (Number(observations[j].id) === Number(req.params.oId)) {
                     res.status(200).json(
                         {
-                            date: observations[j].date, 
-                            temp: observations[j].temp, 
-                            windSpeed: observations[j].windSpeed, 
-                            windDir: observations[j].windDir, 
-                            prec: observations[j].prec, 
+                            date: observations[j].date,
+                            temp: observations[j].temp,
+                            windSpeed: observations[j].windSpeed,
+                            windDir: observations[j].windDir,
+                            prec: observations[j].prec,
                             hum: observations[j].hum
                         }
                     );
                     return;
                 }
             }
-            res.status(404).json({message: 'observation not found.'});
+            res.status(404).json({ message: 'observation not found.' });
             return;
         }
     }
-    res.status(404).json({message: 'station not found.'});
+    res.status(404).json({ message: 'station not found.' });
 });
 
 /* ============================================================================================ */
@@ -145,15 +123,15 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
         The request, if successful, shall return the new station 
         (all attributes, including id).
 */
-app.post('/api/v1/stations', (req, res)=> {
+app.post('/api/v1/stations', (req, res) => {
     let validationCode = logic.stationValidation(req.body);
-    if(validationCode) {
-        res.status(400).json({message: errorMessages[validationCode]});
+    if (validationCode) {
+        res.status(400).json({ message: errorMessages[validationCode] });
     } else {
         let newStation = Object(
             {
-                id: logic.getNewStationId(), 
-                description: req.body.description, 
+                id: logic.getNewStationId(),
+                description: req.body.description,
                 lon: Number(req.body.lon),
                 lat: Number(req.body.lat),
                 observations: []
@@ -174,28 +152,28 @@ app.post('/api/v1/stations', (req, res)=> {
 */
 app.post('/api/v1/stations/:sId/observations', (req, res) => {
     let validationCode = logic.observationValidation(req.body);
-    if(validationCode) {
-        res.status(400).json({message: errorMessages[validationCode]});
+    if (validationCode) {
+        res.status(400).json({ message: errorMessages[validationCode] });
     } else {
         let newObservation = Object(
             {
-                id: logic.getNewObservationId(), 
-                date: new Date().getTime(), 
-                temp: Number(req.body.temp), 
-                windSpeed: Number(req.body.windSpeed), 
-                windDir: req.body.windDir, 
-                prec: Number(req.body.prec), 
+                id: logic.getNewObservationId(),
+                date: new Date().getTime(),
+                temp: Number(req.body.temp),
+                windSpeed: Number(req.body.windSpeed),
+                windDir: req.body.windDir,
+                prec: Number(req.body.prec),
                 hum: Number(req.body.hum)
             }
         );
         let parentStation = logic.findStationWithID(stations, req.params.sId);
-        if(parentStation !== null) {
+        if (parentStation !== null) {
             parentStation.observations.push(newObservation.id);
             observations.push(newObservation)
             res.status(201).json(newObservation);
             return;
         }
-        res.status(404).json({message: 'station not found.'});
+        res.status(404).json({ message: 'station not found.' });
     }
 });
 
@@ -208,12 +186,12 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
         (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id). 
         The request, if successful, returns all updated attributes of the station.
 */
-app.put('/api/v1/stations/:sId',(req,res)=>{
-    for(let i= 0; i < stations.length; i++){
-        if(Number(stations[i].id) === Number(req.params.sId)) {
+app.put('/api/v1/stations/:sId', (req, res) => {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
             validationCode = logic.stationValidation(req.body);
-            if(validationCode) {
-                res.status(400).json({message: errorMessages[validationCode]});
+            if (validationCode) {
+                res.status(400).json({ message: errorMessages[validationCode] });
             } else {
                 stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
@@ -238,18 +216,18 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
         part of the observations attribute).
 */
 app.delete('/api/v1/stations', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
+    for (let i = 0; i < stations.length; i++) {
         let obs = [];
-        for(let j = 0; j < observations.length; j++) {
-            stations[i].observations.forEach(oId =>{
-                if(Number(observations[j].id) === Number(oId)) {
+        for (let j = 0; j < observations.length; j++) {
+            stations[i].observations.forEach(oId => {
+                if (Number(observations[j].id) === Number(oId)) {
                     obs.push(observations[j]);
                 }
             });
         }
         stations[i].observations = obs;
-    }    
-    res.status(200).json({stations: stations});
+    }
+    res.status(200).json({ stations: stations });
     stations = [];
     observations = [];
 });
@@ -263,20 +241,20 @@ app.delete('/api/v1/stations', (req, res) => {
 */
 app.delete('/api/v1/stations/:sId', (req, res) => {
     let obs = [];
-    for(let i = 0; i < stations.length; i++) {
-        if(Number(stations[i].id) === Number(req.params.sId)) {
-            for(let j = 0; j < observations.length; j++) {
-                stations[i].observations.forEach(oId =>{
-                    if(Number(observations[j].id) === Number(oId)) {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
+            for (let j = 0; j < observations.length; j++) {
+                stations[i].observations.forEach(oId => {
+                    if (Number(observations[j].id) === Number(oId)) {
                         obs.push(observations.splice(j--, 1));
                     }
                 });
             }
-            res.status(200).json({stations: stations.splice(i, 1), observations: obs});
+            res.status(200).json({ stations: stations.splice(i, 1), observations: obs });
             return;
         }
     }
-    res.status(404).json({message: 'station not found'});
+    res.status(404).json({ message: 'station not found' });
 });
 
 
@@ -287,21 +265,21 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
 */
 app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
     let obs = [];
-    for(let i = 0; i < stations.length; i++) {
-        if(Number(stations[i].id) === Number(req.params.sId)) {
-            for(let j = 0; j < observations.length; j++) {
-                for(let k = 0; k < stations[i].observations.length; k++) {
-                    if(Number(observations[j].id) === Number(stations[i].observations[k])) {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
+            for (let j = 0; j < observations.length; j++) {
+                for (let k = 0; k < stations[i].observations.length; k++) {
+                    if (Number(observations[j].id) === Number(stations[i].observations[k])) {
                         obs.push(observations.splice(j--, 1));
                     }
                 }
             }
             stations[i].observations = [];
-            res.status(200).json({observations: obs});
+            res.status(200).json({ observations: obs });
             return;
         }
     }
-    res.status(404).json({message: 'station not found.'});
+    res.status(404).json({ message: 'station not found.' });
 });
 
 
@@ -311,24 +289,24 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
         if successful, returns all attributes of the deleted observations[j].
 */
 app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
-    for(let i = 0; i < stations.length; i++) {
-        if(Number(stations[i].id) === Number(req.params.sId)) {
-            for(let j = 0; j < observations.length; j++) {
-                if(Number(observations[j].id) === Number(req.params.oId)) {
-                    for(let k = 0; k < stations[i].observations.length; k++) {
-                        if(Number(stations[i].observations[k]) === Number(req.params.oId)) {
+    for (let i = 0; i < stations.length; i++) {
+        if (Number(stations[i].id) === Number(req.params.sId)) {
+            for (let j = 0; j < observations.length; j++) {
+                if (Number(observations[j].id) === Number(req.params.oId)) {
+                    for (let k = 0; k < stations[i].observations.length; k++) {
+                        if (Number(stations[i].observations[k]) === Number(req.params.oId)) {
                             stations[i].observations.splice(k, 1);
-                            res.status(202).json({observations: observations.splice(j, 1)});
+                            res.status(202).json({ observations: observations.splice(j, 1) });
                             return;
                         }
                     }
                 }
             }
-        res.status(404).json({message: 'observation not found.'});
-        return;
+            res.status(404).json({ message: 'observation not found.' });
+            return;
         }
     }
-    res.status(404).json({message: 'station not found.'});
+    res.status(404).json({ message: 'station not found.' });
 });
 
 /* ============================================================================================ */
@@ -336,5 +314,5 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* ============================================================================================ */
 
 app.use('*', (req, res) => {
-    res.status(405).json({message: 'Operation not supported.'});
+    res.status(405).json({ message: 'Operation not supported.' });
 });

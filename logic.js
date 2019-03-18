@@ -1,6 +1,6 @@
 // Project 03/logic.js
 
-var sSerial = 1000;    // remember to purge dummy data before handin
+var sSerial = 1000;
 var oSerial = 1000;
 
 exports.stationValidation = function(ob) {
