@@ -147,7 +147,6 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 */
 app.post('/api/v1/stations', (req, res)=> {
     let validationCode = logic.stationValidation(req.body);
-    console.log(req.body);
     if(validationCode) {
         res.status(400).json({message: errorMessages[validationCode]});
     } else {
