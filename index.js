@@ -93,16 +93,7 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             for(let j = 0; j < observations.length; j++) {
                 stations[i].observations.forEach(oId =>{
                     if(Number(observations[j].id) === Number(oId)) {
-                        obs.push(
-                            {
-                                date: observations[j].date, 
-                                temp: observations[j].temp, 
-                                windSpeed: observations[j].windSpeed, 
-                                windDir: observations[j].windDir, 
-                                prec: observations[j].prec, 
-                                hum: observations[j].hum
-                            }
-                        );
+                        obs.push(observations[j]);
                     }
                 });
             }
@@ -248,7 +239,7 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
         part of the observations attribute).
 */
 app.delete('/api/v1/stations', (req, res) => {
-    res.status(202).json({stations: stations, observations: observations});
+    res.status(200).json({stations: stations, observations: observations});
     stations = [];
     observations = [];
 });
@@ -271,7 +262,7 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
                     }
                 });
             }
-            res.status(202).json({stations: stations.splice(i, 1), observations: obs});
+            res.status(200).json({stations: stations.splice(i, 1), observations: obs});
             return;
         }
     }
@@ -296,7 +287,7 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
                 }
             }
             stations[i].observations = [];
-            res.status(202).json({observations: obs});
+            res.status(200).json({observations: obs});
             return;
         }
     }
