@@ -247,7 +247,18 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
         part of the observations attribute).
 */
 app.delete('/api/v1/stations', (req, res) => {
-    res.status(202).json({stations: stations, observations: observations});
+    for(let i = 0; i < stations.length; i++) {
+        let obs = [];
+        for(let j = 0; j < observations.length; j++) {
+            stations[i].observations.forEach(oId =>{
+                if(Number(observations[j].id) === Number(oId)) {
+                    obs.push(observations[j]);
+                }
+            });
+        }
+        stations[i].observations = obs;
+    }    
+    res.status(202).json({stations: stations});
     stations = [];
     observations = [];
 });
