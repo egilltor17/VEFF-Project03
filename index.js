@@ -11,7 +11,7 @@ const port = "3000";
 /* Setup                                                                                        */
 /* ============================================================================================ */
 
-// app.use(url.json());
+app.use(url.json());
 
 // http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
 app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
@@ -156,6 +156,7 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 */
 app.post('/api/v1/stations', (req, res)=> {
     let validationCode = logic.stationValidation(req.body);
+    console.log(req.body);
     if(validationCode) {
         res.status(400).json({message: errorMessages[validationCode]});
     } else {
