@@ -1,11 +1,11 @@
 // Project 03/index.js
 
-const http = require("http");
-const logic = require("./logic");
-const express = require("express");
+const http = require('http');
+const logic = require('./logic');
+const express = require('express');
 const app = express();
-const url = require("body-parser");
-const port = "3000";
+const url = require('body-parser');
+const port = '3000';
 
 /* ============================================================================================ */
 /* Setup                                                                                        */
@@ -20,33 +20,33 @@ app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
 //The following is an example of an array of two stations. 
 //The observation array includes the ids of the observations belonging to the specified station
 var stations = [
-    {id: 1, description: "Reykjavik", lat: 64.1275, lon: -21.9028, observations: [2, 3]},
-    {id: 422, description: "Akureyri", lat: 65.6856, lon: -18.1002, observations: [1]},
-    {id: 801, description: "Egilsstaðir", lat: 66.9456, lon: -13.1002, observations: [4, 5, 6]}
+    {id: 1, description: 'Reykjavik', lat: 64.1275, lon: -21.9028, observations: [2, 3]},
+    {id: 422, description: 'Akureyri', lat: 65.6856, lon: -18.1002, observations: [1]},
+    {id: 801, description: 'Egilsstaðir', lat: 66.9456, lon: -13.1002, observations: [4, 5, 6]}
 ];
 
 //The following is an example of an array of two observations.
 //Note that an observation does not know which station it belongs to!
 var observations = [
-    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: "ese", prec: 0.0, hum: 82.0},
-    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: "n", prec: 0.0, hum: 50.0},
-    {id: 3, date: 1551885138664, temp: 5.3, windSpeed: 3.2, windDir: "ne", prec: 0.0, hum: 71.9},
-    {id: 4, date: 1551882446464, temp: 22.3, windSpeed: 0.2, windDir: "e", prec: 0.0, hum: 77.2},
-    {id: 5, date: 1551883466464, temp: 26.3, windSpeed: 15.7, windDir: "sw", prec: 0.0, hum: 84.7},
-    {id: 6, date: 1551884464764, temp: 25.3, windSpeed: 30.4, windDir: "nw", prec: 0.0, hum: 74.0}
+    {id: 1, date: 1551885104266, temp: -2.7, windSpeed: 2.0, windDir: 'ese', prec: 0.0, hum: 82.0},
+    {id: 2, date: 1551885137409, temp: 0.6, windSpeed: 5.0, windDir: 'n', prec: 0.0, hum: 50.0},
+    {id: 3, date: 1551885138664, temp: 5.3, windSpeed: 3.2, windDir: 'ne', prec: 0.0, hum: 71.9},
+    {id: 4, date: 1551882446464, temp: 22.3, windSpeed: 0.2, windDir: 'e', prec: 0.0, hum: 77.2},
+    {id: 5, date: 1551883466464, temp: 26.3, windSpeed: 15.7, windDir: 'sw', prec: 0.0, hum: 84.7},
+    {id: 6, date: 1551884464764, temp: 25.3, windSpeed: 30.4, windDir: 'nw', prec: 0.0, hum: 74.0}
 ];
 
 var errorMessages = [
-    "All good.",
-    "The request body is undefined.",
-    "Description \"description\": is missing",
-    "Latitude \"lat\": must be in range [-90, 90].",
-    "Longitude \"lon\": must be in range [-180, 180].",
-    "Tempeture \"temp\": must be a number",
-    "Wind speed \"windSpeed\": must not be negative.",
-    "Wind direction \"windDir\": must be lowercase cardinal direction",
-    "Precipitation \"prec\": must not be negative.",
-    "Humidity \"hum\": musts be in range [0, 100]"
+    'All good.',
+    'The request body is undefined.',
+    'Description "description": is missing',
+    'Latitude "lat": must be in range [-90, 90].',
+    'Longitude "lon": must be in range [-180, 180].',
+    'Tempeture "temp": must be a number',
+    'Wind speed "windSpeed": must be a non negative number.',
+    'Wind direction "windDir": must be lowercase cardinal direction',
+    'Precipitation "prec": must not be negative.',
+    'Humidity "hum": musts be in range [0, 100]'
 ];
 
 /* ============================================================================================ */
@@ -78,7 +78,7 @@ app.get('/api/v1/stations/:sId', (req, res) => {
             return;
         }
     }
-    res.status(404).json({message: "station not found."});
+    res.status(404).json({message: 'station not found.'});
 });
 
 
@@ -110,7 +110,7 @@ app.get('/api/v1/stations/:sId/observations', (req, res) => {
             return;
         }
     }
-    res.status(404).json({message: "station not found."});
+    res.status(404).json({message: 'station not found.'});
 });
 
 
@@ -136,11 +136,11 @@ app.get('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     return;
                 }
             }
-            res.status(404).json({message: "observation not found."});
+            res.status(404).json({message: 'observation not found.'});
             return;
         }
     }
-    res.status(404).json({message: "station not found."});
+    res.status(404).json({message: 'station not found.'});
 });
 
 /* ============================================================================================ */
@@ -205,9 +205,9 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
             res.status(201).json(newObservation);
             return;
         }
-        res.status(404).json({message: "station not found."});
+        res.status(404).json({message: 'station not found.'});
     }
-})
+});
 
 /* ============================================================================================ */
 /* PUT requests                                                                                 */
@@ -222,20 +222,19 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
     for(let i= 0; i < stations.length; i++){
         if(Number(stations[i].id) === Number(req.params.sId)) {
             validationCode = logic.stationValidation(req.body);
-            if(validationCode > 0) {
-                res.status(400).json({'message':errorMessages[validationCode]});
-            } 
-            else {
+            if(validationCode) {
+                res.status(400).json({message: errorMessages[validationCode]});
+            } else {
                 stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
                 stations[i].lon = req.body.lon;
-            res.status(200).json(stations[i]);
-            return;
-        }
+                res.status(200).json(stations[i]);
+                return;
+            }
         }
     }
-    res.status(404).send("message: station not found.");
-})
+    res.status(404).send('message: station not found.');
+});
 
 
 /* ============================================================================================ */
@@ -276,7 +275,7 @@ app.delete('/api/v1/stations/:sId', (req, res) => {
             return;
         }
     }
-    res.status(404).json({message: "station not found"});
+    res.status(404).json({message: 'station not found'});
 });
 
 
@@ -301,7 +300,7 @@ app.delete('/api/v1/stations/:sId/observations/', (req, res) => {
             return;
         }
     }
-    res.status(404).json({message: "station not found."});
+    res.status(404).json({message: 'station not found.'});
 });
 
 
@@ -324,11 +323,11 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
                     }
                 }
             }
-        res.status(404).json({message: "observation not found."});
+        res.status(404).json({message: 'observation not found.'});
         return;
         }
     }
-    res.status(404).json({message: "station not found."});
+    res.status(404).json({message: 'station not found.'});
 });
 
 /* ============================================================================================ */
@@ -336,42 +335,5 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 /* ============================================================================================ */
 
 app.use('*', (req, res) => {
-    res.status(405).json({message: "Operation not supported."});
+    res.status(405).json({message: 'Operation not supported.'});
 });
-
-/*
-    s1. Read all stations
-        Returns an array of all stations. For each station, only the description and the id is included in the
-        response.
-    s2. Read an individual station 
-        Returns all attributes of a specified station.
-    s3. Create a new station
-        Creates a new station. The endpoint expects all attributes apart from the id in the request body. The
-        id shall be auto-generated. The request, if successful, shall return the new station (all attributes,including id).
-    s4. Delete a station
-        Deletes an existing station. The request also deletes all observations for the given station. The
-        request, if successful, returns all attributes of the deleted station (including all observations in the
-        observations attribute).
-    s5. Update a station
-        (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id). The request, if successful, returns all updated attributes of the station.
-    s6. Delete all stations
-        Deletes all existing stations. The request also deletes all observations for all existing stations. The
-        request, if successful, returns all deleted stations (all attributes), as well as their observations (as a
-        part of the observations attribute).
-
-
-    o1. Read all observations for a station
-        Returns an array of all observations (with all attributes) for a specified station.
-    o2. Read an individual observation
-        Returns all attributes of a specified observation (for a station).
-    o3. Create a new observation
-        Creates a new observation for a specified station. The endpoint expects all attributes apart from the
-        id and the date in the request body. The id (unique, non-negative number) and the date (current date)
-        shall be auto-generated. The request, if successful, shall return the new observation (all attributes,
-        including id and date).
-    o4. Delete an observation
-        Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observations[j].
-    o5. Delete all observations for a station
-        Deletes all existing observations for a specified station. The request, if successful, returns all deleted
-        observations (all attributes).
-*/
