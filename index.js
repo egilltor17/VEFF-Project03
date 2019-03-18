@@ -199,7 +199,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
         );
         let parentStation = logic.findStationWithID(stations, req.params.sId);
         if(parentStation !== null) {
-            parentStation.observations.push(newObservation);
+            parentStation.observations.push(newObservation.id);
             observations.push(newObservation)
             res.status(201).json(newObservation);
             return;
@@ -225,9 +225,9 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
                 res.status(400).json({'message':errorMessages[validationCode]});
             } 
             else {
+                stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
                 stations[i].lon = req.body.lon;
-                stations[i].description = req.body.description;
             res.status(200).json(stations[i]);
             return;
         }
