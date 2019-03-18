@@ -221,8 +221,8 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
     for(let i= 0; i < stations.length; i++){
         if(Number(stations[i].id) === Number(req.params.sId)) {
             validationCode = logic.stationValidation(req.body);
-            if(validationCode > 0) {
-                res.status(400).json({'message':errorMessages[validationCode]});
+            if(validationCode) {
+                res.status(400).json({message: errorMessages[validationCode]});
             } else {
                 stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
