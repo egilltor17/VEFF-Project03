@@ -1,8 +1,9 @@
 // Project 03/logic.js
 
-var sSerial = 1000;
-var oSerial = 1000;
+var sSerial = 1;
+var oSerial = 1;
 
+// This function makes sure that all the parameters for a station object are valid
 exports.stationValidation = function(ob) {
     if(ob === undefined) {
         return 1;
@@ -18,7 +19,7 @@ exports.stationValidation = function(ob) {
     }
     return 0
 }
-    
+// This function makes sure that all the parameters for an observation object are valid
 exports.observationValidation = function(ob){
     if(ob === undefined) {
         return 1;
