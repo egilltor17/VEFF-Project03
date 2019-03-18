@@ -11,7 +11,7 @@ const port = "3000";
 /* Setup                                                                                        */
 /* ============================================================================================ */
 
-// app.use(url.json());
+app.use(url.json());
 
 // http.createServer(app).listen(port, () => console.log(`Weather app listening on port ${port}!`));
 app.listen(port, () => console.log(`Weather app listening on port ${port}!`));
