@@ -206,7 +206,7 @@ app.post('/api/v1/stations/:sId/observations', (req, res) => {
         }
         res.status(404).json({message: "station not found."});
     }
-})
+});
 
 /* ============================================================================================ */
 /* PUT requests                                                                                 */
@@ -223,18 +223,17 @@ app.put('/api/v1/stations/:sId',(req,res)=>{
             validationCode = logic.stationValidation(req.body);
             if(validationCode > 0) {
                 res.status(400).json({'message':errorMessages[validationCode]});
-            } 
-            else {
+            } else {
                 stations[i].description = req.body.description;
                 stations[i].lat = req.body.lat;
                 stations[i].lon = req.body.lon;
-            res.status(200).json(stations[i]);
-            return;
-        }
+                res.status(200).json(stations[i]);
+                return;
+            }
         }
     }
     res.status(404).send("message: station not found.");
-})
+});
 
 
 /* ============================================================================================ */
@@ -337,40 +336,3 @@ app.delete('/api/v1/stations/:sId/observations/:oId', (req, res) => {
 app.use('*', (req, res) => {
     res.status(405).json({message: "Operation not supported."});
 });
-
-/*
-    s1. Read all stations
-        Returns an array of all stations. For each station, only the description and the id is included in the
-        response.
-    s2. Read an individual station 
-        Returns all attributes of a specified station.
-    s3. Create a new station
-        Creates a new station. The endpoint expects all attributes apart from the id in the request body. The
-        id shall be auto-generated. The request, if successful, shall return the new station (all attributes,including id).
-    s4. Delete a station
-        Deletes an existing station. The request also deletes all observations for the given station. The
-        request, if successful, returns all attributes of the deleted station (including all observations in the
-        observations attribute).
-    s5. Update a station
-        (Completely) Updates an existing station. The updated data is expected in the request body (excluding the id). The request, if successful, returns all updated attributes of the station.
-    s6. Delete all stations
-        Deletes all existing stations. The request also deletes all observations for all existing stations. The
-        request, if successful, returns all deleted stations (all attributes), as well as their observations (as a
-        part of the observations attribute).
-
-
-    o1. Read all observations for a station
-        Returns an array of all observations (with all attributes) for a specified station.
-    o2. Read an individual observation
-        Returns all attributes of a specified observation (for a station).
-    o3. Create a new observation
-        Creates a new observation for a specified station. The endpoint expects all attributes apart from the
-        id and the date in the request body. The id (unique, non-negative number) and the date (current date)
-        shall be auto-generated. The request, if successful, shall return the new observation (all attributes,
-        including id and date).
-    o4. Delete an observation
-        Deletes an existing observation for a specified station. The request, if successful, returns all attributes of the deleted observations[j].
-    o5. Delete all observations for a station
-        Deletes all existing observations for a specified station. The request, if successful, returns all deleted
-        observations (all attributes).
-*/
